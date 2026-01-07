@@ -5,15 +5,6 @@ import { verifyToken } from "@/lib/jwt";
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // ignora arquivos estáticos e API
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.includes(".")
-  ) {
-    return NextResponse.next();
-  }
-
   const token = req.cookies.get("auth")?.value;
 
   if (!token) {

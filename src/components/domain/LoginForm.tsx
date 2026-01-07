@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { login } from "@/services/auth";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -15,17 +16,23 @@ export function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
+    const res = await login({ email, password });
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) return;
+    if (!res.ok) {
+      setError(res.error);
+      setIsLoading(false);
+      return;
+    }
 
     await refreshUser();
-    router.push("/");
+
+    setIsLoading(false);
+
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect") || "/";
+
+    router.push(redirect);
   }
 
   return (

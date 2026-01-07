@@ -1,34 +1,92 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { ok, fail } from "@/utils/response";
 import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
-  const { name, email, password } = await req.json();
-
-  if (!name || !email || !password) {
-    return NextResponse.json({ message: "Missing fields" }, { status: 400 });
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return fail("Invalid request body", 400);
   }
 
-  const exists = await prisma.user.findUnique({
-    where: { email },
-  });
+  const { name, email, password } = body;
 
-  if (exists) {
-    return NextResponse.json(
-      { message: "User already exists" },
-      { status: 409 }
+  if (!name || !email || !password) {
+    return fail("Missing fields", 400);
+  }
+
+  // Name
+  const trimmedName = typeof name === "string" ? name.trim() : "";
+  if (trimmedName.length < 2) {
+    return fail("Name must be at least 2 characters", 400);
+  }
+
+  // Email
+  const normalizedEmail =
+    typeof email === "string" ? email.toLowerCase().trim() : "";
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(normalizedEmail)) {
+    return fail("Invalid email address", 400);
+  }
+
+  // Password
+  const pwd = typeof password === "string" ? password : "";
+  const pwdRegex = /^(?=.*[A-Za-z])(?=.*[\d\W]).{8,}$/;
+
+  if (!pwdRegex.test(pwd)) {
+    return fail(
+      "Password must be at least 8 characters and include letters and numbers or symbols",
+      400
     );
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // Check existing user
+  try {
+    const exists = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
 
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-    },
-  });
+    if (exists) {
+      return fail("User already exists", 409);
+    }
+  } catch (err) {
+    console.error("Database error during lookup:", err);
+    return fail("Internal server error", 500);
+  }
 
-  return NextResponse.json({ success: true });
+  // Hash password
+  let hashedPassword: string;
+  try {
+    hashedPassword = await bcrypt.hash(pwd, 10);
+  } catch (err) {
+    console.error("Password hashing error:", err);
+    return fail("Internal server error", 500);
+  }
+
+  // Create user
+  try {
+    const createdUser = await prisma.user.create({
+      data: {
+        name: trimmedName,
+        email: normalizedEmail,
+        password: hashedPassword,
+      },
+    });
+
+    return ok({
+      id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+    });
+  } catch (err: any) {
+    console.error("Database error during create:", err);
+
+    if (err?.code === "P2002" || err?.meta?.target?.includes("email")) {
+      return fail("User already exists", 409);
+    }
+
+    return fail("Internal server error", 500);
+  }
 }

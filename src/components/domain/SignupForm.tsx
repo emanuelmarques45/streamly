@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signup } from "@/services/auth";
 
 export function SignupForm() {
   const [name, setName] = useState("");
@@ -17,16 +18,12 @@ export function SignupForm() {
     setError(null);
     setIsLoading(true);
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    const res = await signup({ name, email, password });
 
     setIsLoading(false);
 
     if (!res.ok) {
-      setError("Error creating account");
+      setError(res.error);
       return;
     }
 
