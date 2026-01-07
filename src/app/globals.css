@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =========================
+   Light theme (default)
+========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-background: 255 255 255;
+  --color-surface: 245 245 245;
+  --color-border: 229 231 235;
+  --color-text: 17 24 39;
+  --color-text-muted: 107 114 128;
+  --color-primary: 37 99 235;
+}
+
+/* =========================
+   Dark theme
+========================= */
+.dark {
+  --color-background: 3 7 18;
+  --color-surface: 15 23 42;
+  --color-border: 255 255 255 / 0.1;
+  --color-text: 226 232 240;
+  --color-text-muted: 148 163 184;
+  --color-primary: 96 165 250;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: rgb(var(--color-background));
+  --color-surface: rgb(var(--color-surface));
+  --color-border: rgb(var(--color-border));
+  --color-text: rgb(var(--color-text));
+  --color-text-muted: rgb(var(--color-text-muted));
+  --color-primary: rgb(var(--color-primary));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-text));
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
