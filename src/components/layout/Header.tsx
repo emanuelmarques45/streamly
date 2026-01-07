@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { Container } from "./Container";
 import { useEffect } from "react";
-import { useTheme } from "@/context/themeContext";
 import { MovieSearch } from "../domain/MovieSearch";
+import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   // Atalho: pressionar "/" foca na busca
@@ -23,6 +25,14 @@ export function Header() {
   }, []);
 
   const { theme, toggleTheme } = useTheme();
+  const { user, loading, refreshUser } = useAuth();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    await refreshUser();
+    router.push("/login");
+  }
 
   return (
     <header className='sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur'>
@@ -35,14 +45,41 @@ export function Header() {
 
           {/* Navegação */}
           <nav className='flex items-center gap-4 text-sm text-text'>
-            {/* <Link href='/' className='hover:text-white transition'>
-              Home
-            </Link> */}
-
             <span className='hidden md:inline text-xs text-gray-500'>
               Press <kbd className='rounded bg-white/10 px-1'>/</kbd> to search
             </span>
 
+            {/* Auth */}
+            {!loading &&
+              (user ? (
+                <div className='flex items-center gap-3'>
+                  <span className='text-sm text-text-muted'>
+                    Hi, {user.name}
+                  </span>
+
+                  <button
+                    onClick={handleLogout}
+                    className='text-sm text-red-500 hover:underline'
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className='flex items-center gap-3'>
+                  <Link href='/login' className='hover:underline'>
+                    Login
+                  </Link>
+
+                  <Link
+                    href='/signup'
+                    className='rounded-md bg-primary px-3 py-1 text-white'
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              ))}
+
+            {/* Tema */}
             <button
               onClick={toggleTheme}
               aria-label='Toggle theme'
@@ -52,6 +89,7 @@ export function Header() {
             </button>
           </nav>
         </div>
+
         <MovieSearch />
       </Container>
     </header>

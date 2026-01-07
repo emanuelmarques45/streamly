@@ -42,7 +42,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
               <div className='absolute inset-0 animate-pulse bg-border' />
             )}
 
-            {movie.poster_path ? (
+            {/* {movie.poster_path ? (
               <Image
                 src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
                 alt={movie.title}
@@ -56,7 +56,7 @@ export function MovieCard({ movie }: { movie: Movie }) {
               <div className='flex h-full items-center justify-center text-sm text-gray-400'>
                 Sem imagem
               </div>
-            )}
+            )} */}
           </div>
 
           <div className='p-4'>
