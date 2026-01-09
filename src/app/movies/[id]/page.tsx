@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getMovieById } from "@/services/movies";
 import { IMAGE_BASE_URL } from "@/constants";
+import { FavoriteButton } from "@/components/domain/FavoriteButton";
 
 export default async function MoviePage({
   params,
@@ -29,7 +30,12 @@ export default async function MoviePage({
         </div>
 
         <div className='flex flex-1 flex-col gap-4'>
-          <h1 className='text-2xl font-semibold md:text-3xl'>{movie.title}</h1>
+          <div className='flex justify-between items-center'>
+            <h1 className='text-2xl font-semibold md:text-3xl'>
+              {movie.title}
+            </h1>
+            <FavoriteButton movieId={movie.id} />
+          </div>
 
           <p className='text-sm text-text/80'>Release: {movie.release_date}</p>
 

@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { Movie } from "@/types/Movie";
 import { IMAGE_BASE_URL } from "@/constants";
 import { Spinner } from "../ui/Spinner";
+import { TvShow } from "@/types/TvShow";
 
-export function MovieCard({ movie }: { movie: Movie }) {
+export function TvShowCard({ show }: { show: TvShow }) {
   const [loaded, setLoaded] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -18,10 +18,10 @@ export function MovieCard({ movie }: { movie: Movie }) {
   return (
     <div className='relative w-1/2 shrink-0'>
       <Link
-        href={`/movies/${movie.id}`}
+        href={`/tv/${show.id}`}
         onClick={handleClick}
-        aria-label={`Ver detalhes do filme ${movie.title}`}
-        title={movie.title}
+        aria-label={`Ver detalhes da série ${show.name}`}
+        title={show.name}
         className={`block h-full ${isPending ? "pointer-events-none" : ""}`}
       >
         <article
@@ -37,15 +37,14 @@ export function MovieCard({ movie }: { movie: Movie }) {
           `}
         >
           <div className='relative aspect-2/3 w-full bg-black/20'>
-            {/* Skeleton da imagem */}
             {!loaded && (
               <div className='absolute inset-0 animate-pulse bg-border' />
             )}
 
-            {movie.poster_path ? (
+            {show.poster_path ? (
               <Image
-                src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
-                alt={movie.title}
+                src={`${IMAGE_BASE_URL.original}${show.poster_path}`}
+                alt={show.name}
                 fill
                 className={`object-cover transition-opacity duration-300 ${
                   loaded ? "opacity-100" : "opacity-0"
@@ -60,16 +59,15 @@ export function MovieCard({ movie }: { movie: Movie }) {
           </div>
 
           <div className='p-4'>
-            <h3 className='line-clamp-2 font-semibold'>{movie.title}</h3>
+            <h3 className='line-clamp-2 font-semibold'>{show.name}</h3>
 
             <span className='mt-1 block text-sm text-yellow-600 dark:text-yellow-400'>
-              ⭐ {movie.vote_average.toFixed(1)}
+              ⭐ {show.vote_average.toFixed(1)}
             </span>
           </div>
         </article>
       </Link>
 
-      {/* Overlay de transição */}
       {isPending && (
         <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/40'>
           <Spinner />

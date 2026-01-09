@@ -3,8 +3,6 @@ import type { NextRequest } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 
 export function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
   const token = req.cookies.get("auth")?.value;
 
   if (!token) {

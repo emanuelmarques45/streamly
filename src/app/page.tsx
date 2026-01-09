@@ -1,25 +1,18 @@
-import { getMovies } from "@/services/movies";
-import { MovieGrid } from "@/components/domain/MovieGrid";
+import { MovieRow } from "@/components/domain/MovieRow";
 import { Container } from "@/components/layout/Container";
-import { Pagination } from "@/components/domain/Pagination";
+import { TvShowRow } from "@/components/domain/TvShowRow";
 
-type HomePageProps = {
-  searchParams: Promise<{
-    page?: string;
-  }>;
-};
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = await searchParams;
-
-  const page = Number(params.page) || 1;
-  const data = await getMovies(page);
-
+export default function HomePage() {
   return (
     <Container>
-      <MovieGrid movies={data.results} />
+      <MovieRow title='Populares' category='popular' />
+      <MovieRow title='Top Avaliados' category='top_rated' />
+      <MovieRow title='Em Cartaz' category='now_playing' />
+      <MovieRow title='Em Breve' category='upcoming' />
 
-      <Pagination currentPage={data.page} totalPages={data.total_pages} />
+      <TvShowRow title='Séries Populares' category='popular' />
+
+      {/* <Pagination currentPage={data.page} totalPages={data.total_pages} /> */}
     </Container>
   );
 }

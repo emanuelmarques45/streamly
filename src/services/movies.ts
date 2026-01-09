@@ -1,27 +1,15 @@
-import { BASE_URL } from "@/constants";
+import { BASE_URL, HEADERS } from "@/constants";
 import { Movie } from "@/types/Movie";
+import { MovieCategory } from "@/types/MovieCategory";
+import { TmdbResponse } from "@/types/TmdbResponse";
 
-const API_KEY = process.env.TMDB_API_KEY;
-
-// if (!API_KEY) {
-//   throw new Error("TMDB_API_KEY is not defined");
-// }
-
-type TMDBResponse<T> = {
-  results: T[];
-  page: number;
-  total_pages: number;
-};
-
-const headers = {
-  accept: "application/json",
-  Authorization: `Bearer ${API_KEY}`,
-};
-
-export async function getMovies(page = 1): Promise<TMDBResponse<Movie>> {
-  const res = await fetch(`${BASE_URL}/movie/popular?page=${page}`, {
+export async function getMovies(
+  page = 1,
+  category: MovieCategory = "popular"
+): Promise<TmdbResponse<Movie>> {
+  const res = await fetch(`${BASE_URL}/movie/${category}?page=${page}`, {
     cache: "force-cache",
-    headers,
+    headers: HEADERS,
   });
 
   if (!res.ok) {
@@ -35,7 +23,7 @@ export async function getMovieById(id: number): Promise<Movie> {
   await new Promise((r) => setTimeout(r, 300));
   const res = await fetch(`${BASE_URL}/movie/${id}`, {
     cache: "force-cache",
-    headers,
+    headers: HEADERS,
   });
 
   if (!res.ok) {
@@ -45,21 +33,30 @@ export async function getMovieById(id: number): Promise<Movie> {
   return res.json();
 }
 
+export async function getMoviesByIds(ids: number[]): Promise<Movie[]> {
+  const requests = ids.map((id) =>
+    fetch(`${BASE_URL}/movie/${id}`, {
+      headers: HEADERS,
+    }).then((res) => res.json())
+  );
+
+  return Promise.all(requests);
+}
+
 export async function searchMovies(query: string): Promise<Movie[]> {
   if (!query) return [];
 
   const res = await fetch(
     `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}`,
     {
-      headers,
+      headers: HEADERS,
     }
   );
-  console.log(res.url);
 
   if (!res.ok) {
     throw new Error("Failed to search movies");
   }
 
-  const data: TMDBResponse<Movie> = await res.json();
+  const data: TmdbResponse<Movie> = await res.json();
   return data.results;
 }

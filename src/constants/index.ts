@@ -4,5 +4,9 @@ const IMAGE_BASE_URL = {
   w92: "https://image.tmdb.org/t/p/w92",
   w342: "https://image.tmdb.org/t/p/w342",
 };
+const HEADERS = {
+  accept: "application/json",
+  Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_TOKEN}`,
+};
 
-export { BASE_URL, IMAGE_BASE_URL };
+export { BASE_URL, IMAGE_BASE_URL, HEADERS };

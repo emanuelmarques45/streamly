@@ -52,7 +52,6 @@ export async function POST(req: Request) {
       return fail("User already exists", 409);
     }
   } catch (err) {
-    console.error("Database error during lookup:", err);
     return fail("Internal server error", 500);
   }
 
@@ -61,7 +60,6 @@ export async function POST(req: Request) {
   try {
     hashedPassword = await bcrypt.hash(pwd, 10);
   } catch (err) {
-    console.error("Password hashing error:", err);
     return fail("Internal server error", 500);
   }
 
@@ -81,8 +79,6 @@ export async function POST(req: Request) {
       email: createdUser.email,
     });
   } catch (err: any) {
-    console.error("Database error during create:", err);
-
     if (err?.code === "P2002" || err?.meta?.target?.includes("email")) {
       return fail("User already exists", 409);
     }

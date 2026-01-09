@@ -8,9 +8,12 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { logout } from "@/services/auth";
+import { usePathname } from "next/navigation";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const showBackButton = pathname.startsWith("/movies/");
 
   // Shortcut: "/" focuses search
   useEffect(() => {
@@ -42,61 +45,36 @@ export function Header() {
     <header className='sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur'>
       <Container>
         {/* TOP BAR */}
-        <div className='flex h-14 items-center justify-between'>
-          {/* Logo */}
-          <Link href='/' className='text-lg font-semibold tracking-tight'>
-            Movie Hub
-          </Link>
-
-          {/* DESKTOP MENU */}
-          <nav className='hidden md:flex items-center gap-4 text-sm text-text'>
-            <span className='hidden lg:inline text-xs text-gray-500'>
-              Press <kbd className='rounded bg-white/10 px-1'>/</kbd> to search
-            </span>
-
-            {!loading && user && (
-              <Link href='/profile' className='hover:underline text-text-muted'>
-                Profile
-              </Link>
+        <div className='flex h-14 items-center '>
+          {/* Left side */}
+          <div className='flex items-center gap-4'>
+            {showBackButton && (
+              <button
+                onClick={() => router.back()}
+                aria-label='Go back'
+                className='rounded-md px-2 py-1 text-3xl text-text-muted hover:bg-text/10 transition'
+              >
+                ←
+              </button>
             )}
 
-            {!loading &&
-              (user ? (
-                <>
-                  <span className='text-sm text-text-muted'>
-                    Hi, {user.name}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className='text-sm text-red-500 hover:underline'
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href='/login' className='hover:underline'>
-                    Login
-                  </Link>
-                  <Link
-                    href='/signup'
-                    className='rounded-md bg-primary px-3 py-1 text-white'
-                  >
-                    Sign up
-                  </Link>
-                </>
-              ))}
-
-            <button
-              onClick={toggleTheme}
-              aria-label='Toggle theme'
-              className='rounded-md border border-black/10 dark:border-white/10 px-2 py-1 text-sm transition hover:bg-black/5 dark:hover:bg-white/10'
+            <Link
+              href='/'
+              className='text-lg font-semibold tracking-tight -mb-1'
             >
-              {theme === "dark" ? "🌙" : "☀️"}
-            </button>
+              Movie Hub
+            </Link>
+          </div>
+
+          {/* Spacer */}
+          <div className='flex-1' />
+
+          {/* Right side */}
+          <nav className='hidden md:flex items-center gap-4 text-sm text-text'>
+            {/* ...menu desktop... */}
           </nav>
 
-          {/* MOBILE BUTTON */}
+          {/* Mobile button */}
           <button
             className='md:hidden text-2xl'
             onClick={() => setIsMenuOpen((v) => !v)}

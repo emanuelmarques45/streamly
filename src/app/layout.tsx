@@ -28,7 +28,7 @@ export default function RootLayout({
       >
         <Providers>
           <Header />
-          <main className='flex-1'>{children}</main>
+          <main className='flex-1 py-4'>{children}</main>
           <Footer />
         </Providers>
       </body>
