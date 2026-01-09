@@ -11,6 +11,9 @@ export default function HomePage() {
       <MovieRow title='Em Breve' category='upcoming' />
 
       <TvShowRow title='Séries Populares' category='popular' />
+      <TvShowRow title='Mais Bem Avaliadas' category='top_rated' />
+      <TvShowRow title='No Ar' category='on_the_air' />
+      <TvShowRow title='Hoje' category='airing_today' />
 
       {/* <Pagination currentPage={data.page} totalPages={data.total_pages} /> */}
     </Container>
