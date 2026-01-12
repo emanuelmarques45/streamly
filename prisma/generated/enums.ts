@@ -9,7 +9,9 @@
 * 🟢 You can import this file directly.
 */
 
+export const FavoriteType = {
+  MOVIE: 'MOVIE',
+  TV: 'TV'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type FavoriteType = (typeof FavoriteType)[keyof typeof FavoriteType]

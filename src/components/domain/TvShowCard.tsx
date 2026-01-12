@@ -16,9 +16,17 @@ export function TvShowCard({ show }: { show: TvShow }) {
   }
 
   return (
-    <div className='relative w-1/2 shrink-0'>
+    <div
+      className='relative
+    shrink-0
+    w-35
+    sm:w-40
+    md:w-45
+    lg:w-50
+    xl:w-55'
+    >
       <Link
-        href={`/tv/${show.id}`}
+        href={`/tvs/${show.id}`}
         onClick={handleClick}
         aria-label={`Ver detalhes da série ${show.name}`}
         title={show.name}

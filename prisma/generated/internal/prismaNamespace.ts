@@ -603,7 +603,8 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const FavoriteScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  movieId: 'movieId'
+  itemId: 'itemId',
+  itemType: 'itemType'
 } as const
 
 export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
@@ -641,6 +642,13 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'FavoriteType'
+ */
+export type EnumFavoriteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FavoriteType'>
     
 
 

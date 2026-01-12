@@ -71,7 +71,41 @@ export function Header() {
 
           {/* Right side */}
           <nav className='hidden md:flex items-center gap-4 text-sm text-text'>
-            {/* ...menu desktop... */}
+            <Link href='/'>Home</Link>
+
+            {!loading && user && <Link href='/profile'>Profile</Link>}
+
+            {!loading &&
+              (user ? (
+                <>
+                  <span className='text-text-muted'>Hi, {user.name}</span>
+
+                  <button
+                    onClick={handleLogout}
+                    className='text-red-500 hover:underline'
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href='/login'>Login</Link>
+
+                  <Link
+                    href='/signup'
+                    className='rounded-md bg-primary px-3 py-2 text-white'
+                  >
+                    Sign up
+                  </Link>
+                </>
+              ))}
+
+            <button
+              onClick={toggleTheme}
+              className='rounded-md border px-2 py-1'
+            >
+              {theme === "dark" ? "🌙" : "☀️"}
+            </button>
           </nav>
 
           {/* Mobile button */}

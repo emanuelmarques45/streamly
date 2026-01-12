@@ -1,35 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getFavorites } from "@/services/favorites";
 import { getMoviesByIds } from "@/services/movies";
+import { getTvShowsByIds } from "@/services/tv";
 import { Container } from "@/components/layout/Container";
-import { Movie } from "@/types/Movie";
 import { FavoriteRow } from "@/components/domain/FavoriteRow";
+import { Movie } from "@/types/Movie";
+import { TvShow } from "@/types/TvShow";
+
+type Favorite = {
+  itemId: number;
+  itemType: "MOVIE" | "TV";
+};
 
 export default function ProfilePage() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: favRes, isLoading: loadingFav } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: getFavorites,
+  });
 
-  useEffect(() => {
-    async function load() {
-      const favRes = await getFavorites();
-      if (!favRes.ok) return;
+  const favorites: Favorite[] = favRes?.ok ? favRes.data : [];
 
-      const movies = await getMoviesByIds(favRes.data);
+  const movieIds = favorites
+    .filter((f) => f.itemType === "MOVIE")
+    .map((f) => f.itemId);
 
-      setMovies(movies);
-      setLoading(false);
-    }
+  const tvIds = favorites
+    .filter((f) => f.itemType === "TV")
+    .map((f) => f.itemId);
 
-    load();
-  }, []);
+  const { data: movies = [], isLoading: loadingMovies } = useQuery<Movie[]>({
+    queryKey: ["favorite-movies", movieIds],
+    queryFn: () => getMoviesByIds(movieIds),
+    enabled: movieIds.length > 0,
+  });
 
-  if (loading) {
+  const { data: tvShows = [], isLoading: loadingTv } = useQuery<TvShow[]>({
+    queryKey: ["favorite-tv", tvIds],
+    queryFn: () => getTvShowsByIds(tvIds),
+    enabled: tvIds.length > 0,
+  });
+
+  if (loadingFav || loadingMovies || loadingTv) {
     return <Container>Loading favorites...</Container>;
   }
-
-  if (!movies.length) {
+  if (!movies.length && !tvShows.length) {
     return (
       <Container>
         <p>No favorites yet.</p>
@@ -38,8 +54,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <Container>
-      <FavoriteRow title='Your favorites' movies={movies} />
+    <Container className='space-y-10'>
+      {movies.length > 0 && (
+        <FavoriteRow title='Favorite movies' items={movies} />
+      )}
+
+      {tvShows.length > 0 && (
+        <FavoriteRow title='Favorite series' items={tvShows} />
+      )}
     </Container>
   );
 }

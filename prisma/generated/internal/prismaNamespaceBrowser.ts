@@ -82,7 +82,8 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const FavoriteScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  movieId: 'movieId'
+  itemId: 'itemId',
+  itemType: 'itemType'
 } as const
 
 export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]

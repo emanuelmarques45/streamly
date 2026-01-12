@@ -1,6 +1,5 @@
 import { BASE_URL, HEADERS } from "@/constants";
-import { Movie } from "@/types/Movie";
-import { MovieCategory } from "@/types/MovieCategory";
+import { Movie, MovieCategory } from "@/types/Movie";
 import { TmdbResponse } from "@/types/TmdbResponse";
 
 export async function getMovies(

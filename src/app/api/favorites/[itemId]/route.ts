@@ -2,13 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/utils/response";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
-import { NextApiRequest } from "next";
+import { NextRequest } from "next/server";
 
 export async function POST(
-  req: NextApiRequest,
-  { params }: { params: Promise<{ movieId: string }> }
+  req: NextRequest,
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
-  const { movieId: id } = await params;
+  const { itemId } = await params;
+
+  const body = await req.json();
+  const { itemType } = body; // "MOVIE" | "TV"
+
   const token = (await cookies()).get("auth")?.value;
   if (!token) return fail("Unauthorized", 401);
 
@@ -19,18 +23,25 @@ export async function POST(
     return fail("Unauthorized", 401);
   }
 
-  const movieId = Number(id);
-  if (!movieId) return fail("Invalid movie id");
+  const id = Number(itemId);
+  if (!id) return fail("Invalid item id");
+
+  const validItemTypes = ["MOVIE", "TV"] as const;
+  if (!itemType || !validItemTypes.includes(itemType)) {
+    return fail("Invalid item type");
+  }
 
   const exists = await prisma.favorite.findUnique({
     where: {
-      userId_movieId: {
+      userId_itemId_itemType: {
         userId: user.id,
-        movieId,
+        itemId: id,
+        itemType,
       },
     },
   });
 
+  // REMOVE
   if (exists) {
     await prisma.favorite.delete({
       where: { id: exists.id },
@@ -39,10 +50,12 @@ export async function POST(
     return ok({ favorited: false });
   }
 
+  // ADD
   await prisma.favorite.create({
     data: {
       userId: user.id,
-      movieId,
+      itemId: id,
+      itemType,
     },
   });
 

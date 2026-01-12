@@ -29,31 +29,34 @@ export type AggregateFavorite = {
 export type FavoriteAvgAggregateOutputType = {
   id: number | null
   userId: number | null
-  movieId: number | null
+  itemId: number | null
 }
 
 export type FavoriteSumAggregateOutputType = {
   id: number | null
   userId: number | null
-  movieId: number | null
+  itemId: number | null
 }
 
 export type FavoriteMinAggregateOutputType = {
   id: number | null
   userId: number | null
-  movieId: number | null
+  itemId: number | null
+  itemType: $Enums.FavoriteType | null
 }
 
 export type FavoriteMaxAggregateOutputType = {
   id: number | null
   userId: number | null
-  movieId: number | null
+  itemId: number | null
+  itemType: $Enums.FavoriteType | null
 }
 
 export type FavoriteCountAggregateOutputType = {
   id: number
   userId: number
-  movieId: number
+  itemId: number
+  itemType: number
   _all: number
 }
 
@@ -61,31 +64,34 @@ export type FavoriteCountAggregateOutputType = {
 export type FavoriteAvgAggregateInputType = {
   id?: true
   userId?: true
-  movieId?: true
+  itemId?: true
 }
 
 export type FavoriteSumAggregateInputType = {
   id?: true
   userId?: true
-  movieId?: true
+  itemId?: true
 }
 
 export type FavoriteMinAggregateInputType = {
   id?: true
   userId?: true
-  movieId?: true
+  itemId?: true
+  itemType?: true
 }
 
 export type FavoriteMaxAggregateInputType = {
   id?: true
   userId?: true
-  movieId?: true
+  itemId?: true
+  itemType?: true
 }
 
 export type FavoriteCountAggregateInputType = {
   id?: true
   userId?: true
-  movieId?: true
+  itemId?: true
+  itemType?: true
   _all?: true
 }
 
@@ -178,7 +184,8 @@ export type FavoriteGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type FavoriteGroupByOutputType = {
   id: number
   userId: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
   _count: FavoriteCountAggregateOutputType | null
   _avg: FavoriteAvgAggregateOutputType | null
   _sum: FavoriteSumAggregateOutputType | null
@@ -207,32 +214,36 @@ export type FavoriteWhereInput = {
   NOT?: Prisma.FavoriteWhereInput | Prisma.FavoriteWhereInput[]
   id?: Prisma.IntFilter<"Favorite"> | number
   userId?: Prisma.IntFilter<"Favorite"> | number
-  movieId?: Prisma.IntFilter<"Favorite"> | number
+  itemId?: Prisma.IntFilter<"Favorite"> | number
+  itemType?: Prisma.EnumFavoriteTypeFilter<"Favorite"> | $Enums.FavoriteType
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type FavoriteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
+  itemType?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type FavoriteWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  userId_movieId?: Prisma.FavoriteUserIdMovieIdCompoundUniqueInput
+  userId_itemId_itemType?: Prisma.FavoriteUserIdItemIdItemTypeCompoundUniqueInput
   AND?: Prisma.FavoriteWhereInput | Prisma.FavoriteWhereInput[]
   OR?: Prisma.FavoriteWhereInput[]
   NOT?: Prisma.FavoriteWhereInput | Prisma.FavoriteWhereInput[]
   userId?: Prisma.IntFilter<"Favorite"> | number
-  movieId?: Prisma.IntFilter<"Favorite"> | number
+  itemId?: Prisma.IntFilter<"Favorite"> | number
+  itemType?: Prisma.EnumFavoriteTypeFilter<"Favorite"> | $Enums.FavoriteType
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id" | "userId_movieId">
+}, "id" | "userId_itemId_itemType">
 
 export type FavoriteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
+  itemType?: Prisma.SortOrder
   _count?: Prisma.FavoriteCountOrderByAggregateInput
   _avg?: Prisma.FavoriteAvgOrderByAggregateInput
   _max?: Prisma.FavoriteMaxOrderByAggregateInput
@@ -246,45 +257,53 @@ export type FavoriteScalarWhereWithAggregatesInput = {
   NOT?: Prisma.FavoriteScalarWhereWithAggregatesInput | Prisma.FavoriteScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Favorite"> | number
   userId?: Prisma.IntWithAggregatesFilter<"Favorite"> | number
-  movieId?: Prisma.IntWithAggregatesFilter<"Favorite"> | number
+  itemId?: Prisma.IntWithAggregatesFilter<"Favorite"> | number
+  itemType?: Prisma.EnumFavoriteTypeWithAggregatesFilter<"Favorite"> | $Enums.FavoriteType
 }
 
 export type FavoriteCreateInput = {
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
   user: Prisma.UserCreateNestedOneWithoutFavoritesInput
 }
 
 export type FavoriteUncheckedCreateInput = {
   id?: number
   userId: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteUpdateInput = {
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
   user?: Prisma.UserUpdateOneRequiredWithoutFavoritesNestedInput
 }
 
 export type FavoriteUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 export type FavoriteCreateManyInput = {
   id?: number
   userId: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteUpdateManyMutationInput = {
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 export type FavoriteUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 export type FavoriteListRelationFilter = {
@@ -297,39 +316,43 @@ export type FavoriteOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type FavoriteUserIdMovieIdCompoundUniqueInput = {
+export type FavoriteUserIdItemIdItemTypeCompoundUniqueInput = {
   userId: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
+  itemType?: Prisma.SortOrder
 }
 
 export type FavoriteAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
 }
 
 export type FavoriteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
+  itemType?: Prisma.SortOrder
 }
 
 export type FavoriteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
+  itemType?: Prisma.SortOrder
 }
 
 export type FavoriteSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  movieId?: Prisma.SortOrder
+  itemId?: Prisma.SortOrder
 }
 
 export type FavoriteCreateNestedManyWithoutUserInput = {
@@ -374,13 +397,19 @@ export type FavoriteUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.FavoriteScalarWhereInput | Prisma.FavoriteScalarWhereInput[]
 }
 
+export type EnumFavoriteTypeFieldUpdateOperationsInput = {
+  set?: $Enums.FavoriteType
+}
+
 export type FavoriteCreateWithoutUserInput = {
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteUncheckedCreateWithoutUserInput = {
   id?: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteCreateOrConnectWithoutUserInput = {
@@ -414,26 +443,31 @@ export type FavoriteScalarWhereInput = {
   NOT?: Prisma.FavoriteScalarWhereInput | Prisma.FavoriteScalarWhereInput[]
   id?: Prisma.IntFilter<"Favorite"> | number
   userId?: Prisma.IntFilter<"Favorite"> | number
-  movieId?: Prisma.IntFilter<"Favorite"> | number
+  itemId?: Prisma.IntFilter<"Favorite"> | number
+  itemType?: Prisma.EnumFavoriteTypeFilter<"Favorite"> | $Enums.FavoriteType
 }
 
 export type FavoriteCreateManyUserInput = {
   id?: number
-  movieId: number
+  itemId: number
+  itemType: $Enums.FavoriteType
 }
 
 export type FavoriteUpdateWithoutUserInput = {
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 export type FavoriteUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 export type FavoriteUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  movieId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemId?: Prisma.IntFieldUpdateOperationsInput | number
+  itemType?: Prisma.EnumFavoriteTypeFieldUpdateOperationsInput | $Enums.FavoriteType
 }
 
 
@@ -441,31 +475,35 @@ export type FavoriteUncheckedUpdateManyWithoutUserInput = {
 export type FavoriteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  movieId?: boolean
+  itemId?: boolean
+  itemType?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favorite"]>
 
 export type FavoriteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  movieId?: boolean
+  itemId?: boolean
+  itemType?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favorite"]>
 
 export type FavoriteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  movieId?: boolean
+  itemId?: boolean
+  itemType?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["favorite"]>
 
 export type FavoriteSelectScalar = {
   id?: boolean
   userId?: boolean
-  movieId?: boolean
+  itemId?: boolean
+  itemType?: boolean
 }
 
-export type FavoriteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "movieId", ExtArgs["result"]["favorite"]>
+export type FavoriteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "itemId" | "itemType", ExtArgs["result"]["favorite"]>
 export type FavoriteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -484,7 +522,8 @@ export type $FavoritePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     userId: number
-    movieId: number
+    itemId: number
+    itemType: $Enums.FavoriteType
   }, ExtArgs["result"]["favorite"]>
   composites: {}
 }
@@ -911,7 +950,8 @@ export interface Prisma__FavoriteClient<T, Null = never, ExtArgs extends runtime
 export interface FavoriteFieldRefs {
   readonly id: Prisma.FieldRef<"Favorite", 'Int'>
   readonly userId: Prisma.FieldRef<"Favorite", 'Int'>
-  readonly movieId: Prisma.FieldRef<"Favorite", 'Int'>
+  readonly itemId: Prisma.FieldRef<"Favorite", 'Int'>
+  readonly itemType: Prisma.FieldRef<"Favorite", 'FavoriteType'>
 }
     
 

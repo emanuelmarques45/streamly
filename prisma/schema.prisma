@@ -23,11 +23,17 @@ model User {
 }
 
 model Favorite {
-  id      Int @id @default(autoincrement())
-  userId  Int
-  movieId Int
+  id       Int          @id @default(autoincrement())
+  userId   Int
+  itemId   Int
+  itemType FavoriteType
 
   user User @relation(fields: [userId], references: [id])
 
-  @@unique([userId, movieId])
+  @@unique([userId, itemId, itemType])
+}
+
+enum FavoriteType {
+  MOVIE
+  TV
 }

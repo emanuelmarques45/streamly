@@ -9,7 +9,7 @@ export function HeartIcon({ filled, loading }: HeartIconProps) {
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 24 24'
       className={`
-        h-12 w-12
+        h-8 w-8
         transition
         ${filled ? "fill-red-500" : "fill-none"}
         stroke-red-500

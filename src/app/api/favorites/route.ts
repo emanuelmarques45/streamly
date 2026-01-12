@@ -16,8 +16,8 @@ export async function GET() {
 
   const favorites = await prisma.favorite.findMany({
     where: { userId: user.id },
-    select: { movieId: true },
+    select: { itemId: true, itemType: true },
   });
 
-  return ok(favorites.map((f) => f.movieId));
+  return ok(favorites);
 }

@@ -1,30 +1,30 @@
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { getMovieById } from "@/services/movies";
-import { IMAGE_BASE_URL } from "@/constants";
+import { EpisodeList } from "@/components/domain/EpisodeList";
 import { FavoriteButton } from "@/components/domain/FavoriteButton";
 import { Container } from "@/components/layout/Container";
-import { FavoriteType } from "@/types/Favorite";
+import { IMAGE_BASE_URL } from "@/constants";
+import { getTvShowById } from "@/services/tv";
+import Image from "next/image";
+import { notFound } from "next/navigation";
 
-export default async function MoviePage({
+export default async function TvShowPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const movie = await getMovieById(parseInt(id));
+  const tv = await getTvShowById(parseInt(id));
 
-  if (!movie) notFound();
+  if (!tv) notFound();
 
   return (
     <section>
       <Container>
         <div className='flex flex-col gap-6 md:flex-row'>
           <div className='relative aspect-2/3 w-full max-w-xs overflow-hidden rounded-xl bg-black/20'>
-            {movie.poster_path && (
+            {tv.poster_path && (
               <Image
-                src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
-                alt={movie.title}
+                src={`${IMAGE_BASE_URL.original}${tv.poster_path}`}
+                alt={tv.name}
                 fill
                 className='object-cover'
                 priority
@@ -34,31 +34,29 @@ export default async function MoviePage({
 
           <div className='flex flex-1 flex-col gap-4'>
             <div className='flex justify-between items-center'>
-              <h1 className='text-2xl font-semibold md:text-3xl'>
-                {movie.title}
-              </h1>
-              <FavoriteButton itemId={movie.id} itemType={FavoriteType.MOVIE} />
+              <h1 className='text-2xl font-semibold md:text-3xl'>{tv.name}</h1>
+              <FavoriteButton itemId={tv.id} />
             </div>
 
             <p className='text-sm text-text/80'>
-              Release: {movie.release_date}
+              First air date: {tv.first_air_date}
             </p>
 
             <p className='text-sm leading-relaxed text-text/60'>
-              {movie.overview}
+              {tv.overview}
             </p>
 
             <span className='text-sm font-medium text-yellow-600  dark:text-yellow-400'>
-              ⭐ {movie.vote_average.toFixed(1)}
+              ⭐ {tv.vote_average.toFixed(1)}
             </span>
 
-            {movie.genres && (
+            {tv.genres && (
               <div className='flex flex-wrap gap-2'>
-                {movie.genres.map((genre) => (
+                {tv.genres.map((genre) => (
                   <span
                     key={genre.id}
                     className='
-                    rounded-full
+                      rounded-full
                       bg-border
                       px-3
                       py-1
@@ -72,6 +70,22 @@ export default async function MoviePage({
               </div>
             )}
           </div>
+        </div>
+
+        <div className='mt-10'>
+          <h2 className='mb-4 text-xl font-semibold'>Episodes</h2>
+
+          {tv.seasons
+            ?.filter((s: any) => s.season_number > 0)
+            .map((season: any) => (
+              <div key={season.id} className='mb-10'>
+                <h3 className='mb-4 text-lg font-medium'>
+                  Season {season.season_number}
+                </h3>
+
+                <EpisodeList tvId={tv.id} season={season.season_number} />
+              </div>
+            ))}
         </div>
       </Container>
     </section>

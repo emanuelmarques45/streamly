@@ -1,6 +1,5 @@
-import { Movie } from "@/types/Movie";
+import { MovieCategory } from "@/types/Movie";
 import { MovieCard } from "./MovieCard";
-import { MovieCategory } from "@/types/MovieCategory";
 import { getMovies } from "@/services/movies";
 
 type MovieRowProps = {
@@ -13,7 +12,7 @@ export async function MovieRow({ title, category }: MovieRowProps) {
 
   return (
     <section className='pb-10'>
-      <h2 className='mb-4 text-xl font-semibold'>{title}</h2>
+      <h2 className='mb-4 text-2xl md:text-3xl font-bold'>{title}</h2>
       <div
         className='flex
         gap-4

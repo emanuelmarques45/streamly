@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { toggleFavorite, getFavorites } from "@/services/favorites";
 import { useAuth } from "@/context/AuthContext";
 import { HeartIcon } from "@/components/ui/HeartIcon";
+import { Favorite } from "@/types/Favorite";
+import { useQueryClient } from "@tanstack/react-query";
 
-export function FavoriteButton({ movieId }: { movieId: number }) {
+export function FavoriteButton({ itemId, itemType }: Favorite) {
   const { user } = useAuth();
   const [favorited, setFavorited] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!user) return;
@@ -17,24 +20,32 @@ export function FavoriteButton({ movieId }: { movieId: number }) {
     async function checkFavorite() {
       const res = await getFavorites();
       if (res.ok) {
-        setFavorited(res.data.includes(movieId));
+        const isFav = res.data.some(
+          (fav: any) => fav.itemId === itemId && fav.itemType === itemType
+        );
+
+        setFavorited(isFav);
       }
       setChecking(false);
     }
 
     checkFavorite();
-  }, [user, movieId]);
+  }, [user, itemId, itemType]);
 
   if (!user || checking) return null;
 
   async function handleToggle() {
     setLoading(true);
-    const res = await toggleFavorite(movieId);
+    const res = await toggleFavorite({ itemId, itemType });
     setLoading(false);
 
     if (res.ok) {
       setFavorited(res.data.favorited);
     }
+
+    queryClient.invalidateQueries({
+      queryKey: ["favorites"],
+    });
   }
 
   return (
