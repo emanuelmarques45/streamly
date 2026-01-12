@@ -62,7 +62,7 @@ export function Header() {
               href='/'
               className='text-lg font-semibold tracking-tight -mb-1'
             >
-              Movie Hub
+              Streamly
             </Link>
           </div>
 

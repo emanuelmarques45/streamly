@@ -19,7 +19,8 @@ export async function MovieRow({ title, category }: MovieRowProps) {
         gap-4
         overflow-x-auto
         pb-2
-        scrollbar-hide'
+        scrollbar-hide
+        scroll-smooth'
       >
         {results.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
