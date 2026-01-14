@@ -7,6 +7,7 @@ import { getMovies } from "@/services/movies";
 import { Movie } from "@/types/Movie";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Spinner } from "../ui/Spinner";
+import { CardSkeleton } from "./CardSkeleton";
 
 type MovieRowProps = {
   title: string;
@@ -17,7 +18,7 @@ export function MovieRow({ title, category }: MovieRowProps) {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["movies", category],
       initialPageParam: 1,
@@ -66,6 +67,8 @@ export function MovieRow({ title, category }: MovieRowProps) {
           scroll-smooth
         '
       >
+        {isPending &&
+          Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
         {data?.pages.map((page) =>
           page.results.map((movie: Movie) => (
             <MovieCard key={movie.id} movie={movie} />

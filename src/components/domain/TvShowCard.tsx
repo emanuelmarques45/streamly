@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { IMAGE_BASE_URL } from "@/constants";
+import { CARD_IMAGE_SIZES, IMAGE_BASE_URL } from "@/constants";
 import { Spinner } from "../ui/Spinner";
 import { TvShow } from "@/types/TvShow";
 
@@ -52,8 +52,9 @@ export function TvShowCard({ show }: { show: TvShow }) {
             {show.poster_path ? (
               <Image
                 src={`${IMAGE_BASE_URL.original}${show.poster_path}`}
-                alt={show.name}
+                alt={show.name ?? "TV Show poster"}
                 fill
+                sizes={CARD_IMAGE_SIZES}
                 className={`object-cover transition-opacity duration-300 ${
                   loaded ? "opacity-100" : "opacity-0"
                 }`}

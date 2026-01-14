@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toggleFavorite, getFavorites } from "@/services/favorites";
+import { getFavorites } from "@/services/favorites";
 import { useAuth } from "@/context/AuthContext";
 import { HeartIcon } from "@/components/ui/HeartIcon";
 import { Favorite } from "@/types/Favorite";
 import { useQueryClient } from "@tanstack/react-query";
+import { toggleFavorite } from "@/services/favorites.client";
 
 export function FavoriteButton({ itemId, itemType }: Favorite) {
   const { user } = useAuth();

@@ -44,6 +44,7 @@ export function LoginForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className='w-full border-b border-border bg-transparent px-1 py-2 outline-none focus:border-primary'
+        autoFocus
       />
 
       <input

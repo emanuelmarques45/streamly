@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import { Movie } from "@/types/Movie";
-import { IMAGE_BASE_URL } from "@/constants";
+import { CARD_IMAGE_SIZES, IMAGE_BASE_URL } from "@/constants";
 import { Spinner } from "../ui/Spinner";
 
 export function MovieCard({ movie }: { movie: Movie }) {
@@ -55,8 +55,9 @@ export function MovieCard({ movie }: { movie: Movie }) {
             {movie.poster_path ? (
               <Image
                 src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
-                alt={movie.title}
+                alt={movie.title ?? "Movie poster"}
                 fill
+                sizes={CARD_IMAGE_SIZES}
                 className={`object-cover transition-opacity duration-300 ${
                   loaded ? "opacity-100" : "opacity-0"
                 }`}

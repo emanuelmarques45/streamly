@@ -1,37 +1,21 @@
-"use client";
+"use server";
 
 import { ApiResponse } from "@/types/Api";
 import { Favorite } from "@/types/Favorite";
-
-export async function toggleFavorite({
-  itemId,
-  itemType,
-}: Favorite): Promise<ApiResponse<{ favorited: boolean }>> {
-  try {
-    const res = await fetch(`/api/favorites/${itemId}`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({ itemType }),
-    });
-
-    return await res.json();
-  } catch {
-    return {
-      ok: false,
-      status: 0,
-      error: "Network error",
-    };
-  }
-}
+import { cookies } from "next/headers";
 
 export async function getFavorites(): Promise<ApiResponse<Favorite[]>> {
   try {
-    const res = await fetch("/api/favorites", {
+    const authToken = (await cookies()).get("auth")?.value.toString();
+    const res = await fetch(`${process.env.APP_URL}/api/favorites`, {
       credentials: "include",
+      headers: {
+        "Cookie": `auth=${authToken}`,
+      },
     });
 
     return await res.json();
-  } catch {
+  } catch (err) {
     return {
       ok: false,
       status: 0,

@@ -9,5 +9,12 @@ const HEADERS = {
   accept: "application/json",
   Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_TOKEN}`,
 };
+const CARD_IMAGE_SIZES = `
+  (max-width: 640px) 140px,
+  (max-width: 768px) 160px,
+  (max-width: 1024px) 180px,
+  (max-width: 1280px) 200px,
+  220px
+`;
 
-export { BASE_URL, IMAGE_BASE_URL, HEADERS };
+export { BASE_URL, IMAGE_BASE_URL, HEADERS, CARD_IMAGE_SIZES };
