@@ -1,11 +1,8 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
+import { Container } from "@/components/layout/Container";
+import { FavoriteRow } from "@/components/domain/FavoriteRow";
 import { getFavorites } from "@/services/favorites";
 import { getMoviesByIds } from "@/services/movies";
 import { getTvShowsByIds } from "@/services/tv";
-import { Container } from "@/components/layout/Container";
-import { FavoriteRow } from "@/components/domain/FavoriteRow";
 import { Movie } from "@/types/Movie";
 import { TvShow } from "@/types/TvShow";
 
@@ -14,13 +11,18 @@ type Favorite = {
   itemType: "MOVIE" | "TV";
 };
 
-export default function ProfilePage() {
-  const { data: favRes, isLoading: loadingFav } = useQuery({
-    queryKey: ["favorites"],
-    queryFn: getFavorites,
-  });
+export default async function ProfilePage() {
+  const favRes = await getFavorites();
 
-  const favorites: Favorite[] = favRes?.ok ? favRes.data : [];
+  if (!favRes.ok) {
+    return (
+      <Container>
+        <p>Unauthorized</p>
+      </Container>
+    );
+  }
+
+  const favorites: Favorite[] = favRes.data;
 
   const movieIds = favorites
     .filter((f) => f.itemType === "MOVIE")
@@ -30,21 +32,10 @@ export default function ProfilePage() {
     .filter((f) => f.itemType === "TV")
     .map((f) => f.itemId);
 
-  const { data: movies = [], isLoading: loadingMovies } = useQuery<Movie[]>({
-    queryKey: ["favorite-movies", movieIds],
-    queryFn: () => getMoviesByIds(movieIds),
-    enabled: movieIds.length > 0,
-  });
+  const movies: Movie[] = movieIds.length ? await getMoviesByIds(movieIds) : [];
 
-  const { data: tvShows = [], isLoading: loadingTv } = useQuery<TvShow[]>({
-    queryKey: ["favorite-tv", tvIds],
-    queryFn: () => getTvShowsByIds(tvIds),
-    enabled: tvIds.length > 0,
-  });
+  const tvShows: TvShow[] = tvIds.length ? await getTvShowsByIds(tvIds) : [];
 
-  if (loadingFav || loadingMovies || loadingTv) {
-    return <Container>Loading favorites...</Container>;
-  }
   if (!movies.length && !tvShows.length) {
     return (
       <Container>
