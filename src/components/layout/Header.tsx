@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Container } from "./Container";
 import { useEffect, useState } from "react";
 import { MovieSearch } from "../domain/MovieSearch";
-import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { logout } from "@/services/auth";
 import { usePathname } from "next/navigation";
+import { useTheme } from "@/context/ThemeContext";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
