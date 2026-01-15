@@ -31,11 +31,6 @@ export function TvShowRow({ title, category }: TvShowRowProps) {
       },
     });
 
-  category == "top_rated" &&
-    data?.pages.map((page) => {
-      page.results.map((show: TvShow) => console.log(show.name));
-    });
-
   useEffect(() => {
     if (!loaderRef.current || !containerRef.current) return;
 
