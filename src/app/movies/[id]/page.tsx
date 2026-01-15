@@ -5,6 +5,7 @@ import { IMAGE_BASE_URL } from "@/constants";
 import { FavoriteButton } from "@/components/domain/FavoriteButton";
 import { Container } from "@/components/layout/Container";
 import { FavoriteType } from "@/types/Favorite";
+import { ItemPoster } from "@/components/domain/ItemPoster";
 
 export default async function MoviePage({
   params,
@@ -22,12 +23,9 @@ export default async function MoviePage({
         <div className='flex flex-col gap-6 md:flex-row'>
           <div className='relative aspect-2/3 w-full max-w-xs overflow-hidden rounded-xl bg-black/20'>
             {movie.poster_path && (
-              <Image
+              <ItemPoster
                 src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
                 alt={movie.title}
-                fill
-                className='object-cover'
-                priority
               />
             )}
           </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signup } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export function SignupForm() {
   const [name, setName] = useState("");
@@ -12,6 +13,7 @@ export function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +29,9 @@ export function SignupForm() {
       return;
     }
 
-    router.push("/login");
+    await refreshUser();
+
+    router.push("/");
   }
 
   return (
@@ -39,6 +43,7 @@ export function SignupForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         className='w-full border-b border-border bg-transparent px-1 py-2 outline-none focus:border-primary'
+        autoFocus
       />
 
       <input

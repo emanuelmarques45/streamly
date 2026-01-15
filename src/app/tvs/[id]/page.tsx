@@ -1,5 +1,6 @@
 import { EpisodeList } from "@/components/domain/EpisodeList";
 import { FavoriteButton } from "@/components/domain/FavoriteButton";
+import { ItemPoster } from "@/components/domain/ItemPoster";
 import { Container } from "@/components/layout/Container";
 import { IMAGE_BASE_URL } from "@/constants";
 import { getTvShowById } from "@/services/tv";
@@ -23,12 +24,9 @@ export default async function TvShowPage({
         <div className='flex flex-col gap-6 md:flex-row'>
           <div className='relative aspect-2/3 w-full max-w-xs overflow-hidden rounded-xl bg-black/20'>
             {tv.poster_path && (
-              <Image
+              <ItemPoster
                 src={`${IMAGE_BASE_URL.original}${tv.poster_path}`}
                 alt={tv.name}
-                fill
-                className='object-cover'
-                priority
               />
             )}
           </div>

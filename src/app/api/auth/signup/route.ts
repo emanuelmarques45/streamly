@@ -1,3 +1,4 @@
+import { emailToHash, signToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 import { ok, fail } from "@/utils/response";
 import bcrypt from "bcrypt";
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
 
   // Create user
   try {
-    const createdUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name: trimmedName,
         email: normalizedEmail,
@@ -73,11 +74,28 @@ export async function POST(req: Request) {
       },
     });
 
-    return ok({
-      id: createdUser.id,
-      name: createdUser.name,
-      email: createdUser.email,
+    const token = signToken({
+      id: user.id,
+      name: user.name,
+      emailHash: emailToHash(user.email),
     });
+
+    const res = ok({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
+
+    // 🍪 seta cookie igual ao login
+    res.cookies.set("auth", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 dias
+    });
+
+    return res;
   } catch (err: any) {
     if (err?.code === "P2002" || err?.meta?.target?.includes("email")) {
       return fail("User already exists", 409);
