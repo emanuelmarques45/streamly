@@ -3,6 +3,7 @@ import { FavoriteButton } from "@/components/domain/FavoriteButton";
 import { Container } from "@/components/layout/Container";
 import { IMAGE_BASE_URL } from "@/constants";
 import { getTvShowById } from "@/services/tv";
+import { FavoriteType } from "@/types/Favorite";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -35,7 +36,7 @@ export default async function TvShowPage({
           <div className='flex flex-1 flex-col gap-4'>
             <div className='flex justify-between items-center'>
               <h1 className='text-2xl font-semibold md:text-3xl'>{tv.name}</h1>
-              <FavoriteButton itemId={tv.id} />
+              <FavoriteButton itemType={FavoriteType.TV} itemId={tv.id} />
             </div>
 
             <p className='text-sm text-text/80'>
