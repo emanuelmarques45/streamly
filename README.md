@@ -4,12 +4,11 @@
 
 ---
 
-<!--
 ## 🚀 Demonstração
 
-> Deploy: **[https://seu-link.vercel.app](https://seu-link.vercel.app)**
+> Deploy: **[https://streamly-iota.vercel.app/](https://streamly-iota.vercel.app/)**
 
---- -->
+---
 
 ## ✨ Funcionalidades
 
