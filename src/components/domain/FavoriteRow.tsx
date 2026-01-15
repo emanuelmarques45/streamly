@@ -2,7 +2,6 @@ import { Movie } from "@/types/Movie";
 import { TvShow } from "@/types/TvShow";
 import { MovieCard } from "./MovieCard";
 import { TvShowCard } from "./TvShowCard";
-import { Container } from "../layout/Container";
 
 type FavoriteRowProps = {
   title: string;
@@ -15,27 +14,26 @@ function isMovie(item: Movie | TvShow): item is Movie {
 
 export function FavoriteRow({ title, items }: FavoriteRowProps) {
   return (
-    <section className='pb-10'>
-      <Container>
-        <h2 className='mb-4 text-xl font-semibold'>{title}</h2>
+    <section className='pb-12'>
+      <h2 className='mb-6 text-2xl font-semibold'>{title}</h2>
 
-        <div
-          className='
-          grid
-          gap-4
-          grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]
-          place-items-center
+      <div
+        className='
+          flex
+          flex-wrap
+          gap-6
+          justify-center
+          sm:justify-normal
         '
-        >
-          {items.map((item) =>
-            isMovie(item) ? (
-              <MovieCard key={`movie-${item.id}`} movie={item} />
-            ) : (
-              <TvShowCard key={`tv-${item.id}`} show={item} />
-            )
-          )}
-        </div>
-      </Container>
+      >
+        {items.map((item) =>
+          isMovie(item) ? (
+            <MovieCard key={`movie-${item.id}`} movie={item} />
+          ) : (
+            <TvShowCard key={`tv-${item.id}`} show={item} />
+          )
+        )}
+      </div>
     </section>
   );
 }
