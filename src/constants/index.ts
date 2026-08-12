@@ -19,11 +19,11 @@ const CARD_IMAGE_SIZES = `
   220px
 `;
 
-/** Tempo de cache (em segundos) das listas do TMDB. */
+/** Cache lifetime, in seconds, for TMDB responses. */
 const REVALIDATE = {
-  list: 60 * 60, // catálogos mudam pouco ao longo do dia
-  detail: 60 * 60 * 6, // detalhes de um título mudam raramente
-  search: 60 * 5, // busca precisa refletir novidades mais rápido
+  list: 60 * 60, // catalogs barely change during the day
+  detail: 60 * 60 * 6, // a title's details rarely change
+  search: 60 * 5, // search must pick up new titles faster
 };
 
 export { BASE_URL, IMAGE_BASE_URL, CARD_IMAGE_SIZES, REVALIDATE };

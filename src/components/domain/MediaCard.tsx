@@ -14,14 +14,14 @@ import { FavoriteButton } from "./FavoriteButton";
 
 type MediaCardProps = {
   item: MediaItem;
-  /** Marca a imagem como prioritária (usar só nos primeiros itens visíveis). */
+  /** Marks the image as priority; use only for the first visible items. */
   priority?: boolean;
   className?: string;
 };
 
 /**
- * Card único para filmes e séries — antes eram dois componentes praticamente
- * idênticos (`MovieCard` e `TvShowCard`).
+ * One card for both movies and TV shows. This used to be two nearly identical
+ * components (`MovieCard` and `TvShowCard`).
  */
 export function MediaCard({ item, priority, className }: MediaCardProps) {
   const [loaded, setLoaded] = useState(false);
@@ -60,8 +60,8 @@ export function MediaCard({ item, priority, className }: MediaCardProps) {
 
             {item.posterPath ? (
               <Image
-                // w342 basta para um card de ~220px — `original` chegava a
-                // trazer imagens de vários MB por card.
+                // w342 is plenty for a ~220px card; `original` was pulling in
+                // images of several MB per card.
                 src={`${IMAGE_BASE_URL.w342}${item.posterPath}`}
                 alt={item.title}
                 fill

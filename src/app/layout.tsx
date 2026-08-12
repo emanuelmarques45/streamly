@@ -39,8 +39,8 @@ export const viewport: Viewport = {
 };
 
 /**
- * Aplica o tema antes da primeira pintura. Sem isso a página aparecia clara
- * por um instante antes do React trocar a classe.
+ * Applies the theme before the first paint. Without this the page flashed light
+ * for an instant before React swapped the class.
  */
 const themeScript = `
 (function () {
@@ -67,7 +67,7 @@ export default function RootLayout({
         className={`${inter.variable} antialiased font-sans flex min-h-full flex-col`}
       >
         <a
-          href='#conteudo'
+          href='#main-content'
           className='sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-white'
         >
           Pular para o conteúdo
@@ -75,7 +75,7 @@ export default function RootLayout({
 
         <Providers>
           <Header />
-          <main id='conteudo' className='flex-1 py-4'>
+          <main id='main-content' className='flex-1 py-4'>
             {children}
           </main>
           <Footer />

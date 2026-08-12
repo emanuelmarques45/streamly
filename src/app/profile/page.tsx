@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Meus favoritos",
 };
 
-// Favoritos são por usuário: nunca devem ser servidos do cache estático.
+// Favorites are per user and must never be served from the static cache.
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {

@@ -14,12 +14,12 @@ export async function GET(
   const seasonNumber = Number(season);
 
   if (!tvId || !Number.isInteger(seasonNumber) || seasonNumber < 0) {
-    return fail("Invalid season reference", 400);
+    return fail("Temporada inválida", 400);
   }
 
   const data = await getSeasonEpisodes(tvId, seasonNumber);
 
-  if (!data) return fail("Season not found", 404);
+  if (!data) return fail("Temporada não encontrada", 404);
 
   return ok(data, { cacheControl: PUBLIC_CACHE });
 }

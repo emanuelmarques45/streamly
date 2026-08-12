@@ -5,15 +5,15 @@ import clsx from "clsx";
 
 type MediaScrollerProps = {
   children: React.ReactNode;
-  /** Ref repassada ao container — usada pelo sentinel do scroll infinito. */
+  /** Ref forwarded to the container; used by the infinite-scroll sentinel. */
   containerRef?: React.RefObject<HTMLDivElement | null>;
   className?: string;
   label?: string;
 };
 
 /**
- * Carrossel horizontal com setas em telas maiores. As setas só aparecem quando
- * há conteúdo para aquele lado.
+ * Horizontal carousel with arrows on larger screens. Each arrow only shows up
+ * when there is content to scroll toward on that side.
  */
 export function MediaScroller({
   children,
@@ -42,7 +42,7 @@ export function MediaScroller({
     updateArrows();
     el.addEventListener("scroll", updateArrows, { passive: true });
 
-    // Novas páginas carregadas mudam a largura sem disparar scroll.
+    // Newly loaded pages change the width without firing a scroll event.
     const observer = new ResizeObserver(updateArrows);
     observer.observe(el);
 

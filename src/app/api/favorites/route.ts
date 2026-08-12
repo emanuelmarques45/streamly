@@ -5,13 +5,13 @@ import { verifyToken } from "@/lib/jwt";
 
 export async function GET() {
   const token = (await cookies()).get("auth")?.value;
-  if (!token) return fail("Unauthorized", 401);
+  if (!token) return fail("Não autorizado", 401);
 
   let user;
   try {
     user = verifyToken(token);
   } catch {
-    return fail("Unauthorized", 401);
+    return fail("Não autorizado", 401);
   }
 
   const favorites = await prisma.favorite.findMany({

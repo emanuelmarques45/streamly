@@ -11,13 +11,13 @@ type FavoriteRowProps = {
 };
 
 /**
- * Grade de favoritos. Espelha o cache do `useFavorites`, então desfavoritar um
- * item o remove da lista na hora — sem esperar um novo render do servidor.
+ * Favorites grid. It mirrors the `useFavorites` cache, so unfavoriting an item
+ * removes it right away, without waiting for a new server render.
  */
 export function FavoriteRow({ title, items }: FavoriteRowProps) {
   const { isFavorite, isTogglingItem, isReady } = useFavorites();
 
-  // Enquanto a lista do cliente não chegou, confia no que veio do servidor.
+  // Until the client list arrives, trust what came from the server.
   const visible = !isReady
     ? items
     : items.filter((item) => {
@@ -26,7 +26,7 @@ export function FavoriteRow({ title, items }: FavoriteRowProps) {
           itemType: toFavoriteType(item.mediaType),
         };
 
-        // Mantém o card enquanto a remoção está em voo, evitando "pulo" no grid.
+        // Keep the card while the removal is in flight to avoid a jump in the grid.
         return isFavorite(favorite) || isTogglingItem(favorite);
       });
 

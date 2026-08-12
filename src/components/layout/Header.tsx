@@ -26,7 +26,7 @@ export function Header() {
   const showBackButton =
     pathname.startsWith("/movies/") || pathname.startsWith("/tvs/");
 
-  // Atalho: "/" foca a busca (ignorado enquanto o usuário digita em um campo).
+  // Shortcut: "/" focuses the search, unless the user is typing in a field.
   useEffect(() => {
     function handleKey(event: KeyboardEvent) {
       if (event.key !== "/") return;
@@ -143,8 +143,8 @@ export function Header() {
             />
 
             <div className='absolute inset-x-0 top-14 z-50 flex flex-col gap-4 border-b border-border bg-background px-4 py-4 text-sm md:hidden'>
-              {/* Navegar fecha o menu; o botão de tema, fora deste bloco,
-                  mantém o menu aberto. */}
+              {/* Navigating closes the menu; the theme button sits outside
+                  this block so it keeps the menu open. */}
               <div
                 className='flex flex-col gap-4'
                 onClick={() => setIsMenuOpen(false)}

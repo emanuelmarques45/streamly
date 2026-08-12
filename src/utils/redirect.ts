@@ -1,11 +1,11 @@
 /**
- * Só aceita caminhos internos. Sem isso, `?redirect=https://exemplo.com`
- * transformaria o login em um open redirect.
+ * Accepts internal paths only. Without this, `?redirect=https://example.com`
+ * would turn the login page into an open redirect.
  */
 export function safeRedirect(value: string | null | undefined, fallback = "/") {
   if (!value) return fallback;
 
-  // Precisa começar com "/" e não pode ser "//host" (URL protocol-relative).
+  // Must start with "/" and must not be "//host" (protocol-relative URL).
   if (!value.startsWith("/") || value.startsWith("//")) return fallback;
 
   return value;

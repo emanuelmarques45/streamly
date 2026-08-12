@@ -10,11 +10,11 @@ import { Favorite, favoriteKey } from "@/types/Favorite";
 export { FAVORITES_QUERY_KEY };
 
 /**
- * Fonte única de verdade dos favoritos no cliente.
+ * Single source of truth for favorites on the client.
  *
- * Antes cada `FavoriteButton` buscava a lista inteira no mount — com vários
- * botões na tela isso virava uma requisição por card. Agora todos compartilham
- * a mesma query em cache e o toggle é otimista.
+ * Each `FavoriteButton` used to fetch the whole list on mount, which meant one
+ * request per card when several were on screen. They now share a single cached
+ * query, and toggling is optimistic.
  */
 export function useFavorites() {
   const { user } = useAuth();
@@ -79,7 +79,7 @@ export function useFavorites() {
 
   return {
     favorites,
-    /** `false` enquanto a lista do usuário logado ainda não chegou. */
+    /** `false` while the signed-in user's list has not arrived yet. */
     isReady: !user || !query.isLoading,
     isAuthenticated: Boolean(user),
     isFavorite,

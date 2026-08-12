@@ -8,8 +8,8 @@ import { safeJson } from "@/utils/safeJson";
 import type { DiscoverSort, MediaPage } from "@/services/catalog";
 
 /**
- * Ponte do browser para as rotas `/api/catalog/*`. O TMDB nunca é chamado
- * direto do cliente — assim o token de acesso fica só no servidor.
+ * Browser-side bridge to the `/api/catalog/*` routes. TMDB is never called
+ * directly from the client, which keeps the access token on the server.
  */
 
 async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {

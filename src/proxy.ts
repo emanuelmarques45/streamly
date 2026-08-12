@@ -12,7 +12,7 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   } catch {
     const response = redirectToLogin(req);
-    // Token expirado/inválido: limpa o cookie para não repetir o ciclo.
+    // Expired or invalid token: clear the cookie so the loop does not repeat.
     response.cookies.delete("auth");
     return response;
   }

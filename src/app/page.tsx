@@ -6,7 +6,7 @@ import { getTrending } from "@/services/catalog";
 import { MediaItem } from "@/types/Media";
 
 export default async function HomePage() {
-  // O destaque é opcional: se o TMDB falhar, a home continua útil com as linhas.
+  // The hero is optional: if TMDB fails, the rows still make the home useful.
   let trending: MediaItem[] = [];
   try {
     trending = await getTrending("all", "week");

@@ -10,8 +10,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    // QueryClientProvider precisa envolver o AuthProvider: é ele quem limpa o
-    // cache de favoritos quando o usuário entra ou sai.
+    // QueryClientProvider must wrap AuthProvider: the latter clears the
+    // favorites cache when the user signs in or out.
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>{children}</ThemeProvider>

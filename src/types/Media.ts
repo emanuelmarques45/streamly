@@ -4,8 +4,8 @@ import { TvShow } from "./TvShow";
 export type MediaType = "movie" | "tv";
 
 /**
- * Forma normalizada usada por componentes que precisam lidar com filmes e
- * séries ao mesmo tempo (busca, discover, favoritos).
+ * Normalized shape used by components that handle movies and TV shows at the
+ * same time (search, discover, favorites).
  */
 export type MediaItem = {
   id: number;
@@ -15,7 +15,7 @@ export type MediaItem = {
   posterPath: string | null;
   backdropPath: string | null;
   voteAverage: number;
-  /** `release_date` para filmes, `first_air_date` para séries. */
+  /** `release_date` for movies, `first_air_date` for TV shows. */
   date: string | null;
 };
 

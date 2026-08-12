@@ -9,8 +9,8 @@ type TrailerDialogProps = {
 };
 
 /**
- * Abre o trailer num `<dialog>` nativo. O iframe só é montado depois do clique,
- * então a página de detalhe não carrega o player do YouTube à toa.
+ * Opens the trailer in a native `<dialog>`. The iframe is only mounted after the
+ * click, so the detail page does not load the YouTube player for nothing.
  */
 export function TrailerDialog({ trailer, title }: TrailerDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -46,7 +46,7 @@ export function TrailerDialog({ trailer, title }: TrailerDialogProps) {
         ref={dialogRef}
         aria-label={`Trailer de ${title}`}
         onClick={(event) => {
-          // Clique no backdrop (fora do conteúdo) fecha o modal.
+          // A click on the backdrop (outside the content) closes the modal.
           if (event.target === dialogRef.current) dialogRef.current?.close();
         }}
         className='m-auto w-[min(90vw,960px)] rounded-xl bg-black p-0 backdrop:bg-black/70'

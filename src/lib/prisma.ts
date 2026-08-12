@@ -4,8 +4,8 @@ import { PrismaClient } from "prisma/generated/client";
 
 const connectionString = process.env.DATABASE_URL;
 
-// A checagem antes acontecia depois do client já ter sido criado — e usava
-// template string, o que nunca resultava em valor falsy.
+// This check used to run after the client was already created, and compared a
+// template string, which is never falsy.
 if (!connectionString) {
   throw new Error(
     "DATABASE_URL environment variable is required but not set. " +
@@ -17,8 +17,8 @@ function createPrismaClient() {
   return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 }
 
-// Em dev o hot reload reavalia o módulo; sem o singleton cada reload abria um
-// novo pool de conexões até o Postgres recusar novas.
+// Hot reload re-evaluates this module in dev; without the singleton every
+// reload opened a new connection pool until Postgres refused more.
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };

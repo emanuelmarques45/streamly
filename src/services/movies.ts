@@ -28,7 +28,7 @@ export async function getMoviesByIds(ids: number[]): Promise<Movie[]> {
     )
   );
 
-  // Ids inválidos (ou removidos do TMDB) simplesmente somem da lista.
+  // Invalid ids, or titles removed from TMDB, just drop out of the list.
   return results.filter((movie): movie is Movie => movie !== null);
 }
 

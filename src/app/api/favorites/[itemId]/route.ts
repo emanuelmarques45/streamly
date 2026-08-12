@@ -11,30 +11,30 @@ export async function POST(
   { params }: { params: Promise<{ itemId: string }> }
 ) {
   const token = (await cookies()).get("auth")?.value;
-  if (!token) return fail("Unauthorized", 401);
+  if (!token) return fail("Não autorizado", 401);
 
   let userId: number;
   try {
     userId = verifyToken(token).id;
   } catch {
-    return fail("Unauthorized", 401);
+    return fail("Não autorizado", 401);
   }
 
   const { itemId } = await params;
   const id = parseId(itemId);
-  if (!id) return fail("Invalid item id", 400);
+  if (!id) return fail("Identificador inválido", 400);
 
-  // Um corpo malformado derrubava a rota com erro 500 não tratado.
+  // A malformed body used to crash the route with an unhandled 500.
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return fail("Invalid request body", 400);
+    return fail("Requisição inválida", 400);
   }
 
   const itemType = (body as { itemType?: unknown })?.itemType;
   if (!isFavoriteType(itemType)) {
-    return fail("Invalid item type", 400);
+    return fail("Tipo de item inválido", 400);
   }
 
   try {
@@ -56,6 +56,6 @@ export async function POST(
 
     return ok({ favorited: true });
   } catch {
-    return fail("Failed to update favorite", 500);
+    return fail("Não foi possível atualizar o favorito", 500);
   }
 }

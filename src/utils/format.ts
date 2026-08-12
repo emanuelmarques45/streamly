@@ -1,10 +1,10 @@
-/** Ano de uma data do TMDB (`2024-05-17` → `2024`). */
+/** Year of a TMDB date (`2024-05-17` -> `2024`). */
 export function formatYear(date?: string | null) {
   if (!date) return null;
   return date.slice(0, 4);
 }
 
-/** Data legível em pt-BR; devolve `null` para datas ausentes ou inválidas. */
+/** Human-readable pt-BR date; returns `null` for missing or invalid dates. */
 export function formatDate(date?: string | null) {
   if (!date) return null;
 
@@ -18,7 +18,7 @@ export function formatDate(date?: string | null) {
   });
 }
 
-/** Duração em minutos → `2h 15min`. */
+/** Runtime in minutes -> `2h 15min`. */
 export function formatRuntime(minutes?: number | null) {
   if (!minutes || minutes <= 0) return null;
 
@@ -30,7 +30,7 @@ export function formatRuntime(minutes?: number | null) {
   return `${hours}h ${rest}min`;
 }
 
-/** Nota do TMDB com uma casa; `null` quando o título ainda não tem votos. */
+/** TMDB score with one decimal; `null` when the title has no votes yet. */
 export function formatRating(vote?: number | null) {
   if (typeof vote !== "number" || Number.isNaN(vote) || vote <= 0) return null;
   return vote.toFixed(1);

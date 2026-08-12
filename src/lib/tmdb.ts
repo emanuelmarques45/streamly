@@ -1,12 +1,12 @@
 import { BASE_URL, REVALIDATE } from "@/constants";
 
 /**
- * Camada única de acesso ao TMDB. Só pode ser importada em código de servidor
- * (Server Components e Route Handlers) — é ela que carrega o token.
+ * The single entry point to TMDB. Import it from server code only (Server
+ * Components and Route Handlers) — this is the module that carries the token.
  *
- * O token vive aqui, e não em `@/constants`, porque aquele módulo é importado
- * por componentes client: um fallback `NEXT_PUBLIC_*` lá dentro seria inlinado
- * no bundle do browser pelo Next e vazaria a credencial.
+ * The token lives here rather than in `@/constants` because that module is
+ * imported by client components: a `NEXT_PUBLIC_*` fallback there would be
+ * inlined into the browser bundle by Next and leak the credential.
  */
 const TMDB_TOKEN = process.env.TMDB_TOKEN ?? process.env.NEXT_PUBLIC_TMDB_TOKEN;
 
@@ -26,9 +26,9 @@ export class TmdbError extends Error {
 }
 
 type TmdbFetchOptions = {
-  /** Query string já tipada; valores nulos/indefinidos são descartados. */
+  /** Typed query string; null and undefined values are dropped. */
   params?: Record<string, string | number | boolean | undefined | null>;
-  /** Segundos de cache no Data Cache do Next. */
+  /** Cache lifetime in seconds, for Next's Data Cache. */
   revalidate?: number;
 };
 
@@ -60,9 +60,9 @@ export async function tmdbFetch<T>(
 }
 
 /**
- * Igual ao `tmdbFetch`, mas devolve `null` em vez de lançar — útil para
- * requisições opcionais (ex.: buscar vários itens de uma vez, onde um id
- * inválido não deve derrubar a página inteira).
+ * Same as `tmdbFetch`, but returns `null` instead of throwing. Useful for
+ * optional requests, such as fetching several items at once, where one bad id
+ * should not take down the whole page.
  */
 export async function tmdbFetchSafe<T>(
   path: string,

@@ -17,6 +17,6 @@ export async function GET(req: Request) {
     const data = await searchMulti(query, page);
     return ok(data, { cacheControl: SEARCH_CACHE });
   } catch {
-    return fail("Failed to search", 502);
+    return fail("Não foi possível realizar a busca", 502);
   }
 }

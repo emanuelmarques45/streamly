@@ -16,8 +16,8 @@ const DEBOUNCE_MS = 350;
 const MAX_RESULTS = 8;
 
 /**
- * Busca do header. Cobre filmes e séries (`/search/multi`), com debounce,
- * cache via react-query e navegação por teclado.
+ * Header search. Covers both movies and TV shows (`/search/multi`), with
+ * debounce, React Query caching and keyboard navigation.
  */
 export function MediaSearch() {
   const [query, setQuery] = useState("");
@@ -96,7 +96,7 @@ export function MediaSearch() {
           onChange={(event) => {
             setQuery(event.target.value);
             setIsOpen(true);
-            // Digitar produz uma nova lista: o destaque anterior perde sentido.
+            // Typing produces a new list, so the previous highlight is meaningless.
             setActiveIndex(-1);
           }}
           onKeyDown={handleKeyDown}

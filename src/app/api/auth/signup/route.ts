@@ -8,19 +8,19 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return fail("Invalid request body", 400);
+    return fail("Requisição inválida", 400);
   }
 
   const { name, email, password } = body;
 
   if (!name || !email || !password) {
-    return fail("Missing fields", 400);
+    return fail("Preencha todos os campos", 400);
   }
 
   // Name
   const trimmedName = typeof name === "string" ? name.trim() : "";
   if (trimmedName.length < 2) {
-    return fail("Name must be at least 2 characters", 400);
+    return fail("O nome deve ter pelo menos 2 caracteres", 400);
   }
 
   // Email
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(normalizedEmail)) {
-    return fail("Invalid email address", 400);
+    return fail("E-mail inválido", 400);
   }
 
   // Password
@@ -38,22 +38,22 @@ export async function POST(req: Request) {
 
   if (!pwdRegex.test(pwd)) {
     return fail(
-      "Password must be at least 8 characters and include letters and numbers or symbols",
+      "A senha deve ter pelo menos 8 caracteres e incluir letras e ao menos um número ou símbolo",
       400
     );
   }
 
-  // Check existing user
+  // Reject the e-mail before hashing: bcrypt is the expensive step.
   try {
     const exists = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
     if (exists) {
-      return fail("User already exists", 409);
+      return fail("Já existe uma conta com este e-mail", 409);
     }
   } catch {
-    return fail("Internal server error", 500);
+    return fail("Erro interno do servidor", 500);
   }
 
   // Hash password
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
   try {
     hashedPassword = await bcrypt.hash(pwd, 10);
   } catch {
-    return fail("Internal server error", 500);
+    return fail("Erro interno do servidor", 500);
   }
 
   // Create user
@@ -86,24 +86,24 @@ export async function POST(req: Request) {
       email: user.email,
     });
 
-    // 🍪 seta cookie igual ao login
+    // Same session cookie the login route sets.
     res.cookies.set("auth", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 dias
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
     return res;
   } catch (err) {
-    // P2002 = violação de constraint única (corrida entre duas inscrições).
+    // P2002 = unique constraint violation (race between two signups).
     const code = (err as { code?: string })?.code;
 
     if (code === "P2002") {
-      return fail("User already exists", 409);
+      return fail("Já existe uma conta com este e-mail", 409);
     }
 
-    return fail("Internal server error", 500);
+    return fail("Erro interno do servidor", 500);
   }
 }

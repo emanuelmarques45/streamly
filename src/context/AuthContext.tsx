@@ -16,8 +16,8 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
-  // A sessão vira uma query como qualquer outra: sem useState + useEffect e
-  // com deduplicação entre os componentes que leem o usuário.
+  // The session becomes a query like any other: no useState + useEffect, and
+  // requests are deduped across every component that reads the user.
   const { data, isLoading } = useQuery({
     queryKey: SESSION_QUERY_KEY,
     queryFn: async ({ signal }) => {
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   const refreshUser = useCallback(async () => {
-    // Entrar ou sair troca o dono dos favoritos em cache.
+    // Signing in or out changes who the cached favorites belong to.
     queryClient.removeQueries({ queryKey: FAVORITES_QUERY_KEY });
     await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
   }, [queryClient]);

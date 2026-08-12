@@ -5,22 +5,22 @@ import { Favorite } from "@/types/Favorite";
 import { cookies } from "next/headers";
 
 /**
- * Leitura de favoritos no servidor. Antes esta função fazia um fetch para a
- * própria API (`APP_URL/api/favorites`); consultar o banco direto elimina o
- * round-trip e a dependência de `APP_URL` estar configurada.
+ * Server-side read of the user's favorites. This used to fetch the app's own
+ * API (`APP_URL/api/favorites`); querying the database directly removes the
+ * round-trip and the dependency on `APP_URL` being set.
  */
 export async function getFavorites(): Promise<ApiResponse<Favorite[]>> {
   const token = (await cookies()).get("auth")?.value;
 
   if (!token) {
-    return { ok: false, status: 401, error: "Unauthorized" };
+    return { ok: false, status: 401, error: "Não autorizado" };
   }
 
   let userId: number;
   try {
     userId = verifyToken(token).id;
   } catch {
-    return { ok: false, status: 401, error: "Unauthorized" };
+    return { ok: false, status: 401, error: "Não autorizado" };
   }
 
   try {
@@ -32,6 +32,6 @@ export async function getFavorites(): Promise<ApiResponse<Favorite[]>> {
 
     return { ok: true, data: favorites };
   } catch {
-    return { ok: false, status: 500, error: "Failed to load favorites" };
+    return { ok: false, status: 500, error: "Não foi possível carregar os favoritos" };
   }
 }

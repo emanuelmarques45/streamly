@@ -1,8 +1,8 @@
 import { MediaType } from "./Media";
 
 /**
- * Espelha o enum gerado pelo Prisma (objeto const + union) para que os valores
- * vindos do banco sejam atribuíveis sem cast.
+ * Mirrors the enum Prisma generates (const object + union) so values coming
+ * from the database are assignable without a cast.
  */
 export const FavoriteType = {
   MOVIE: "MOVIE",

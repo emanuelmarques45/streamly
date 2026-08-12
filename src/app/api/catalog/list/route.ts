@@ -13,20 +13,20 @@ export async function GET(req: Request) {
   const page = parsePage(searchParams.get("page"));
 
   if (type !== "movie" && type !== "tv") {
-    return fail("Invalid media type", 400);
+    return fail("Tipo de mídia inválido", 400);
   }
 
   const validCategory =
     type === "movie" ? isMovieCategory(category) : isTvShowCategory(category);
 
   if (!validCategory) {
-    return fail("Invalid category", 400);
+    return fail("Categoria inválida", 400);
   }
 
   try {
     const data = await getCategoryPage(type, category, page);
     return ok(data, { cacheControl: PUBLIC_CACHE });
   } catch {
-    return fail("Failed to fetch catalog", 502);
+    return fail("Não foi possível carregar o catálogo", 502);
   }
 }

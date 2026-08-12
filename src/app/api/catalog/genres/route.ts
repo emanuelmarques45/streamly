@@ -8,13 +8,13 @@ export async function GET(req: Request) {
   const type = searchParams.get("type") ?? "movie";
 
   if (type !== "movie" && type !== "tv") {
-    return fail("Invalid media type", 400);
+    return fail("Tipo de mídia inválido", 400);
   }
 
   try {
     const genres = await getGenres(type);
     return ok(genres, { cacheControl: PUBLIC_CACHE });
   } catch {
-    return fail("Failed to fetch genres", 502);
+    return fail("Não foi possível carregar os gêneros", 502);
   }
 }

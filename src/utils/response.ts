@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 type OkOptions = {
   status?: number;
-  /** Header `Cache-Control` — usado pelas rotas de catálogo, que são públicas. */
+  /** `Cache-Control` header, used by the public catalog routes. */
   cacheControl?: string;
 };
 
@@ -18,9 +18,9 @@ function ok<T>(data: T, { status = 200, cacheControl }: OkOptions = {}) {
 }
 
 /**
- * O status vai tanto no corpo (para quem consome o envelope `ApiResponse`)
- * quanto na resposta HTTP — antes só existia no corpo, o que fazia toda falha
- * chegar ao cliente como 200.
+ * The status goes both in the body (for consumers of the `ApiResponse`
+ * envelope) and in the HTTP response. It used to live in the body only, which
+ * made every failure reach the client as a 200.
  */
 function fail(message: string, status = 400) {
   return NextResponse.json<ApiResponse<never>>(

@@ -27,7 +27,7 @@ type MediaDetailProps = {
   date?: string | null;
   dateLabel: string;
   genres?: Genre[];
-  /** Metadados curtos exibidos na linha de "fatos" (duração, temporadas…). */
+  /** Short metadata shown in the facts line (runtime, seasons, and so on). */
   facts?: (string | null)[];
   homepage?: string | null;
   trailer?: Video | null;
@@ -37,8 +37,8 @@ type MediaDetailProps = {
 };
 
 /**
- * Layout compartilhado das páginas de filme e série — antes as duas páginas
- * repetiam quase o mesmo JSX.
+ * Shared layout for the movie and TV show pages, which used to repeat almost
+ * the same JSX.
  */
 export function MediaDetail({
   id,
@@ -75,7 +75,7 @@ export function MediaDetail({
             sizes='100vw'
             className='object-cover'
           />
-          {/* Degradê para o texto continuar legível sobre a imagem. */}
+          {/* Gradient so the text stays legible over the image. */}
           <div className='absolute inset-0 bg-linear-to-t from-background via-background/70 to-background/20' />
         </div>
       )}

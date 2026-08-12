@@ -4,7 +4,7 @@ import { safeJson } from "@/utils/safeJson";
 export type User = {
   id: number;
   name: string | null;
-  /** Ausente na sessão (`/api/auth/me`): o JWT não guarda e-mail em texto. */
+  /** Absent from the session (`/api/auth/me`): the JWT stores no plain e-mail. */
   email?: string | null;
 };
 
@@ -29,7 +29,7 @@ export async function login({
       return {
         ok: false,
         status: res.status,
-        error: "Invalid server response",
+        error: "Resposta inválida do servidor",
       };
     }
 
@@ -45,11 +45,11 @@ export async function login({
       ok: true,
       data: body.data,
     };
-  } catch (err) {
+  } catch {
     return {
       ok: false,
       status: 0,
-      error: err instanceof Error ? err.message : "Network error",
+      error: "Erro de conexão. Verifique sua internet.",
     };
   }
 }
@@ -77,7 +77,7 @@ export async function signup({
       return {
         ok: false,
         status: res.status,
-        error: "Invalid server response",
+        error: "Resposta inválida do servidor",
       };
     }
 
@@ -93,11 +93,11 @@ export async function signup({
       ok: true,
       data: body.data,
     };
-  } catch (err) {
+  } catch {
     return {
       ok: false,
       status: 0,
-      error: err instanceof Error ? err.message : "Network error",
+      error: "Erro de conexão. Verifique sua internet.",
     };
   }
 }
@@ -113,16 +113,16 @@ export async function logout(): Promise<ApiResponse<null>> {
       return {
         ok: false,
         status: res.status,
-        error: "Logout failed",
+        error: "Não foi possível sair da conta",
       };
     }
 
     return { ok: true, data: null };
-  } catch (err) {
+  } catch {
     return {
       ok: false,
       status: 0,
-      error: err instanceof Error ? err.message : "Network error",
+      error: "Erro de conexão. Verifique sua internet.",
     };
   }
 }
@@ -143,7 +143,7 @@ export async function getMe(options?: {
       return {
         ok: false,
         status: res.status,
-        error: "Invalid server response",
+        error: "Resposta inválida do servidor",
       };
     }
 
@@ -153,14 +153,14 @@ export async function getMe(options?: {
       return {
         ok: false,
         status: 0,
-        error: "Request aborted",
+        error: "Requisição cancelada",
       };
     }
 
     return {
       ok: false,
       status: 0,
-      error: err instanceof Error ? err.message : "Network error",
+      error: "Erro de conexão. Verifique sua internet.",
     };
   }
 }

@@ -28,7 +28,7 @@ export function FavoriteButton({
   const pending = isTogglingItem(favorite);
 
   function handleClick(event: React.MouseEvent) {
-    // Em cards o botão fica sobre um <Link>: sem isso o clique navega.
+    // On cards this button sits over a <Link>; without this the click navigates.
     event.preventDefault();
     event.stopPropagation();
 

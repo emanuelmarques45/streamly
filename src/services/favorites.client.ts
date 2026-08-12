@@ -21,7 +21,7 @@ export async function fetchFavorites(
     signal,
   });
 
-  // Visitante deslogado não é erro: apenas não tem favoritos.
+  // A signed-out visitor is not an error: they simply have no favorites.
   if (res.status === 401) return [];
 
   return unwrap<Favorite[]>(res);

@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "/" ? 1 : 0.6,
   }));
 
-  // Os títulos em alta cobrem as páginas de detalhe que valem indexar.
+  // Trending titles cover the detail pages worth indexing.
   let trendingRoutes: MetadataRoute.Sitemap = [];
   try {
     const trending = await getTrending("all", "week");

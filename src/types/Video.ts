@@ -13,8 +13,8 @@ export type Videos = {
 };
 
 /**
- * Escolhe o melhor vídeo para exibir: prioriza trailers oficiais do YouTube,
- * caindo para teasers e, por último, qualquer vídeo do YouTube.
+ * Picks the best video to show: official YouTube trailers first, then any
+ * trailer, then teasers, and finally any YouTube video.
  */
 export function pickTrailer(videos?: Video[]): Video | null {
   if (!videos?.length) return null;

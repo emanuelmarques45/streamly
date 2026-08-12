@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   const type = searchParams.get("type") ?? "movie";
 
   if (type !== "movie" && type !== "tv") {
-    return fail("Invalid media type", 400);
+    return fail("Tipo de mídia inválido", 400);
   }
 
   const sortParam = searchParams.get("sort") ?? "";
@@ -25,6 +25,6 @@ export async function GET(req: Request) {
 
     return ok(data, { cacheControl: PUBLIC_CACHE });
   } catch {
-    return fail("Failed to fetch discover results", 502);
+    return fail("Não foi possível carregar os resultados", 502);
   }
 }

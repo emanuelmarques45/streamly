@@ -17,7 +17,7 @@ export function Footer() {
             </Link>
           </nav>
 
-          {/* Atribuição exigida pelos termos de uso da API do TMDB. */}
+          {/* Attribution required by the TMDB API terms of use. */}
           <p className='max-w-sm text-xs'>
             Este produto usa a API do{" "}
             <a

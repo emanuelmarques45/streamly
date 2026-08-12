@@ -21,15 +21,15 @@ const STORAGE_KEY = "theme";
 const CHANGE_EVENT = "streamly:themechange";
 
 /**
- * A classe `dark` no <html> é a fonte de verdade — o script inline do layout a
- * aplica antes da primeira pintura. Ler o DOM com `useSyncExternalStore` evita
- * o efeito de sincronização (e o flash) que existia antes.
+ * The `dark` class on <html> is the source of truth: the layout's inline script
+ * applies it before the first paint. Reading the DOM through
+ * `useSyncExternalStore` avoids the sync effect (and the flash) we had before.
  */
 function subscribe(onStoreChange: () => void) {
   const media = window.matchMedia("(prefers-color-scheme: dark)");
 
   function handleSystemChange(event: MediaQueryListEvent) {
-    // Preferência explícita do usuário vence a do sistema.
+    // An explicit user preference wins over the system one.
     if (localStorage.getItem(STORAGE_KEY)) return;
 
     document.documentElement.classList.toggle("dark", event.matches);

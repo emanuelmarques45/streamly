@@ -54,7 +54,7 @@ export default async function DiscoverPage({
       />
 
       <DiscoverResults
-        // Trocar de filtro monta uma árvore nova, zerando o scroll infinito.
+        // Changing a filter mounts a fresh tree, resetting the infinite scroll.
         key={`${mediaType}-${selectedGenres.join(",")}-${year ?? ""}-${sort}`}
         mediaType={mediaType}
         genres={selectedGenres}

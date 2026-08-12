@@ -19,8 +19,8 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 40 }, (_, i) => CURRENT_YEAR - i);
 
 /**
- * Filtros do Discover. Todo o estado vive na URL, então a combinação escolhida
- * é compartilhável e sobrevive ao refresh.
+ * Discover filters. All state lives in the URL, so the chosen combination is
+ * shareable and survives a refresh.
  */
 export function DiscoverFilters({
   mediaType,
@@ -48,7 +48,7 @@ export function DiscoverFilters({
   function setMediaType(next: MediaType) {
     push((params) => {
       params.set("type", next);
-      // Os ids de gênero do TMDB não são compartilhados entre filmes e séries.
+      // TMDB genre ids are not shared between movies and TV shows.
       params.delete("genres");
     });
   }

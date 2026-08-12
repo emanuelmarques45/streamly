@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Áreas autenticadas e API não têm valor em busca.
+      // Authenticated areas and the API have no value in search results.
       disallow: ["/api/", "/profile"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,

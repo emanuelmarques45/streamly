@@ -1,4 +1,4 @@
-/** Página válida do TMDB: inteiro entre 1 e 500. */
+/** A valid TMDB page: an integer between 1 and 500. */
 export function parsePage(value: string | null | undefined, fallback = 1) {
   const page = Number(value);
 
@@ -6,7 +6,7 @@ export function parsePage(value: string | null | undefined, fallback = 1) {
   return page;
 }
 
-/** Id numérico positivo; devolve `null` quando o valor não é utilizável. */
+/** Positive numeric id; returns `null` when the value is unusable. */
 export function parseId(value: string | null | undefined): number | null {
   const id = Number(value);
 
@@ -14,7 +14,7 @@ export function parseId(value: string | null | undefined): number | null {
   return id;
 }
 
-/** Lista de ids separada por vírgula (ex.: `?genres=28,12`). */
+/** Comma-separated list of ids (e.g. `?genres=28,12`). */
 export function parseIdList(value: string | null | undefined): number[] {
   if (!value) return [];
 
@@ -24,7 +24,7 @@ export function parseIdList(value: string | null | undefined): number[] {
     .filter((id) => Number.isInteger(id) && id > 0);
 }
 
-/** Ano de lançamento plausível. */
+/** A plausible release year. */
 export function parseYear(value: string | null | undefined): number | undefined {
   const year = Number(value);
   const currentYear = new Date().getFullYear();

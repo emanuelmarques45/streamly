@@ -7,8 +7,8 @@ import { TmdbResponse } from "@/types/TmdbResponse";
 import { TvShow } from "@/types/TvShow";
 
 /**
- * Serviços que atravessam filmes e séries: trending, discover, gêneros e
- * multi-search. Todos rodam no servidor e devolvem `MediaItem` normalizado.
+ * Services that span movies and TV shows: trending, discover, genres and
+ * multi-search. All run on the server and return normalized `MediaItem`s.
  */
 
 export type TimeWindow = "day" | "week";
@@ -16,9 +16,9 @@ export type TimeWindow = "day" | "week";
 export type DiscoverFilters = {
   mediaType: MediaType;
   page?: number;
-  /** Ids de gênero do TMDB. */
+  /** TMDB genre ids. */
   genres?: number[];
-  /** Ano de lançamento / primeira exibição. */
+  /** Release year for movies, first air year for TV shows. */
   year?: number;
   sortBy?: DiscoverSort;
   minVotes?: number;
@@ -54,7 +54,7 @@ function toMediaPage(
 ): MediaPage {
   return {
     page: response.page,
-    totalPages: Math.min(response.total_pages, 500), // limite duro do TMDB
+    totalPages: Math.min(response.total_pages, 500), // TMDB hard limit
     totalResults: response.total_results,
     items: response.results.map((item) => ({
       ...toMediaItem(item),
@@ -102,13 +102,13 @@ export async function discover({
   sortBy = "popularity.desc",
   minVotes,
 }: DiscoverFilters): Promise<MediaPage> {
-  // `primary_release_date` não existe em séries — o TMDB usa `first_air_date`.
+  // `primary_release_date` does not exist for TV; TMDB uses `first_air_date`.
   const sort =
     mediaType === "tv" && sortBy === "primary_release_date.desc"
       ? "first_air_date.desc"
       : sortBy;
 
-  // Ordenar por nota sem um piso de votos traz títulos com 1 voto e nota 10.
+  // Sorting by score without a vote floor surfaces titles with one 10/10 vote.
   const voteFloor =
     minVotes ?? (sortBy === "vote_average.desc" ? 300 : undefined);
 

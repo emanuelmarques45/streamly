@@ -15,12 +15,12 @@ type SeasonPickerProps = {
 };
 
 /**
- * Antes a página de série renderizava os episódios de *todas* as temporadas no
- * servidor — uma requisição por temporada e uma página gigante. Agora só a
- * temporada selecionada é buscada, sob demanda.
+ * The TV show page used to render the episodes of *every* season on the server:
+ * one request per season and a huge page. Only the selected season is fetched
+ * now, on demand.
  */
 export function SeasonPicker({ tvId, seasons }: SeasonPickerProps) {
-  // Temporada 0 é "especiais"; começa na primeira temporada regular.
+  // Season 0 holds specials; start on the first regular season.
   const regular = seasons.filter((season) => season.season_number > 0);
   const available = regular.length ? regular : seasons;
 
