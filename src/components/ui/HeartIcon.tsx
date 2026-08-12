@@ -1,20 +1,24 @@
+import clsx from "clsx";
+
 type HeartIconProps = {
   filled?: boolean;
   loading?: boolean;
+  className?: string;
 };
 
-export function HeartIcon({ filled, loading }: HeartIconProps) {
+export function HeartIcon({ filled, loading, className }: HeartIconProps) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
       viewBox='0 0 24 24'
-      className={`
-        h-8 w-8
-        transition
-        ${filled ? "fill-red-500" : "fill-none"}
-        stroke-red-500
-        ${loading ? "opacity-50" : "hover:scale-110"}
-      `}
+      aria-hidden='true'
+      className={clsx(
+        "transition drop-shadow",
+        filled ? "fill-red-500" : "fill-black/30",
+        "stroke-red-500",
+        loading ? "animate-pulse opacity-60" : "group-hover:scale-110",
+        className ?? "h-8 w-8"
+      )}
       strokeWidth='2'
     >
       <path

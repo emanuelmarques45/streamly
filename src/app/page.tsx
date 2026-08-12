@@ -1,21 +1,69 @@
-import { MovieRow } from "@/components/domain/MovieRow";
+import { Hero } from "@/components/domain/Hero";
+import { MediaCarousel } from "@/components/domain/MediaCarousel";
+import { MediaRow } from "@/components/domain/MediaRow";
 import { Container } from "@/components/layout/Container";
-import { TvShowRow } from "@/components/domain/TvShowRow";
+import { getTrending } from "@/services/catalog";
+import { MediaItem } from "@/types/Media";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // O destaque é opcional: se o TMDB falhar, a home continua útil com as linhas.
+  let trending: MediaItem[] = [];
+  try {
+    trending = await getTrending("all", "week");
+  } catch {
+    trending = [];
+  }
+
+  const hero = trending.find((item) => item.backdropPath) ?? trending[0];
+  const rest = trending.filter((item) => item.id !== hero?.id);
+
   return (
-    <Container>
-      <MovieRow title='Popular Movies' category='popular' />
-      <MovieRow title='Top Rated Movies' category='top_rated' />
-      <MovieRow title='Now Playing' category='now_playing' />
-      <MovieRow title='Upcoming Movies' category='upcoming' />
+    <>
+      {hero && <Hero item={hero} />}
 
-      <TvShowRow title='Popular TV Shows' category='popular' />
-      <TvShowRow title='Top Rated TV Shows' category='top_rated' />
-      <TvShowRow title='On The Air' category='on_the_air' />
-      <TvShowRow title='Airing Today' category='airing_today' />
+      <Container>
+        {rest.length > 0 && (
+          <MediaCarousel title='Em alta esta semana' items={rest} />
+        )}
 
-      {/* <Pagination currentPage={data.page} totalPages={data.total_pages} /> */}
-    </Container>
+        <MediaRow
+          title='Filmes populares'
+          mediaType='movie'
+          category='popular'
+          href='/discover?type=movie'
+          priority={!hero}
+        />
+        <MediaRow
+          title='Séries populares'
+          mediaType='tv'
+          category='popular'
+          href='/discover?type=tv'
+        />
+        <MediaRow
+          title='Filmes mais bem avaliados'
+          mediaType='movie'
+          category='top_rated'
+          href='/discover?type=movie&sort=vote_average.desc'
+        />
+        <MediaRow
+          title='Em cartaz'
+          mediaType='movie'
+          category='now_playing'
+        />
+        <MediaRow title='Em breve' mediaType='movie' category='upcoming' />
+        <MediaRow
+          title='Séries mais bem avaliadas'
+          mediaType='tv'
+          category='top_rated'
+          href='/discover?type=tv&sort=vote_average.desc'
+        />
+        <MediaRow title='No ar' mediaType='tv' category='on_the_air' />
+        <MediaRow
+          title='Exibindo hoje'
+          mediaType='tv'
+          category='airing_today'
+        />
+      </Container>
+    </>
   );
 }

@@ -35,9 +35,45 @@
   --color-primary: rgb(var(--color-primary));
 }
 
+/* Esconde a barra de rolagem dos carrosséis sem perder o scroll.
+   A classe já era usada nos componentes, mas nunca havia sido definida. */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer base {
   body {
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-text));
+  }
+
+  ::selection {
+    background-color: rgb(var(--color-primary) / 0.3);
+  }
+
+  /* Foco visível e consistente para navegação por teclado. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-primary));
+    outline-offset: 2px;
+  }
+
+  dialog::backdrop {
+    background-color: rgb(0 0 0 / 0.7);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

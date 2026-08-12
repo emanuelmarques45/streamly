@@ -1,77 +1,70 @@
-import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getMovieById } from "@/services/movies";
+import { MediaDetail } from "@/components/domain/MediaDetail";
 import { IMAGE_BASE_URL } from "@/constants";
-import { FavoriteButton } from "@/components/domain/FavoriteButton";
-import { Container } from "@/components/layout/Container";
-import { FavoriteType } from "@/types/Favorite";
-import { ItemPoster } from "@/components/domain/ItemPoster";
+import { getMovieById } from "@/services/movies";
+import { toMediaItem } from "@/types/Media";
+import { pickTrailer } from "@/types/Video";
+import { formatRuntime, formatYear } from "@/utils/format";
+import { parseId } from "@/utils/params";
 
-export default async function MoviePage({
+type PageProps = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const movie = await getMovieById(parseInt(id));
+  const movieId = parseId(id);
+  const movie = movieId ? await getMovieById(movieId) : null;
+
+  if (!movie) return { title: "Filme não encontrado" };
+
+  const year = formatYear(movie.release_date);
+  const title = year ? `${movie.title} (${year})` : movie.title;
+
+  return {
+    title,
+    description: movie.overview?.slice(0, 200),
+    openGraph: {
+      title,
+      description: movie.overview?.slice(0, 200),
+      type: "video.movie",
+      images: movie.backdrop_path
+        ? [`${IMAGE_BASE_URL.w1280}${movie.backdrop_path}`]
+        : undefined,
+    },
+  };
+}
+
+export default async function MoviePage({ params }: PageProps) {
+  const { id } = await params;
+  const movieId = parseId(id);
+
+  if (!movieId) notFound();
+
+  const movie = await getMovieById(movieId);
 
   if (!movie) notFound();
 
   return (
-    <section>
-      <Container>
-        <div className='flex flex-col gap-6 md:flex-row'>
-          <div className='relative aspect-2/3 w-full max-w-xs overflow-hidden rounded-xl bg-black/20'>
-            {movie.poster_path && (
-              <ItemPoster
-                src={`${IMAGE_BASE_URL.original}${movie.poster_path}`}
-                alt={movie.title}
-              />
-            )}
-          </div>
-
-          <div className='flex flex-1 flex-col gap-4'>
-            <div className='flex justify-between items-center'>
-              <h1 className='text-2xl font-semibold md:text-3xl'>
-                {movie.title}
-              </h1>
-              <FavoriteButton itemId={movie.id} itemType={FavoriteType.MOVIE} />
-            </div>
-
-            <p className='text-sm text-text/80'>
-              Release: {movie.release_date}
-            </p>
-
-            <p className='text-sm leading-relaxed text-text/60'>
-              {movie.overview}
-            </p>
-
-            <span className='text-sm font-medium text-yellow-600  dark:text-yellow-400'>
-              ⭐ {movie.vote_average.toFixed(1)}
-            </span>
-
-            {movie.genres && (
-              <div className='flex flex-wrap gap-2'>
-                {movie.genres.map((genre) => (
-                  <span
-                    key={genre.id}
-                    className='
-                    rounded-full
-                      bg-border
-                      px-3
-                      py-1
-                      text-xs
-                      font-medium
-                    '
-                  >
-                    {genre.name}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </Container>
-    </section>
+    <MediaDetail
+      id={movie.id}
+      mediaType='movie'
+      title={movie.title}
+      tagline={movie.tagline}
+      overview={movie.overview}
+      posterPath={movie.poster_path}
+      backdropPath={movie.backdrop_path}
+      voteAverage={movie.vote_average}
+      voteCount={movie.vote_count}
+      date={movie.release_date}
+      dateLabel='Lançamento'
+      genres={movie.genres}
+      facts={[formatRuntime(movie.runtime)]}
+      homepage={movie.homepage}
+      trailer={pickTrailer(movie.videos?.results)}
+      cast={movie.credits?.cast}
+      recommendations={movie.recommendations?.results.map(toMediaItem)}
+    />
   );
 }

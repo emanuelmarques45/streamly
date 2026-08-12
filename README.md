@@ -1,6 +1,6 @@
 # 🎬 Streamly
 
-**Streamly** é uma aplicação web desenvolvida com **Next.js** para explorar **filmes e séries** consumindo a API oficial do **TMDB (The Movie Database)**. O projeto possui layout inspirado em plataformas de streaming, com **listas horizontais por categoria**, páginas de detalhes e foco em **performance, organização de código e boas práticas modernas de frontend**.
+**Streamly** é uma aplicação web feita com **Next.js (App Router)** para explorar **filmes e séries** usando a API do **TMDB**. O layout é inspirado em plataformas de streaming: destaque na home, listas horizontais por categoria, página de descoberta com filtros, páginas de detalhe com elenco e trailer, e uma lista pessoal de favoritos.
 
 ---
 
@@ -12,50 +12,77 @@
 
 ## ✨ Funcionalidades
 
-### 🎥 Filmes
+### 🏠 Home
 
-- Listagem por categorias:
+- Destaque (hero) com o título mais popular da semana
+- Carrossel "Em alta esta semana" (filmes + séries)
+- Listas horizontais por categoria com **scroll infinito** e setas de navegação
 
-  - Populares
-  - Top Avaliados
-  - Em Cartaz
-  - Em Breve
+### 🎥 Filmes e 📺 Séries
 
-- Layout em carrossel horizontal (estilo Netflix)
-- Navegação por páginas
-- Página de detalhes do filme
+- Categorias: populares, mais bem avaliados, em cartaz, em breve, no ar, exibindo hoje
+- Página de detalhes com backdrop, sinopse, gêneros, duração, nota e contagem de votos
+- **Elenco principal**, **trailer** (modal com player sob demanda) e **recomendações**
+- Séries: **seletor de temporadas** que carrega os episódios da temporada escolhida
 
-### 📺 Séries
+### 🔎 Descobrir (`/discover`)
 
-- Listagem por categorias:
+- Filtro por **gênero** (múltipla seleção), **ano** e **ordenação**
+- Alternância entre filmes e séries
+- Estado inteiramente na URL — a combinação de filtros é compartilhável
+- Grade com scroll infinito
 
-  - Populares
-  - Mais bem avaliadas
-  - No ar
-  - Exibindo hoje
+### 🔍 Busca
 
-- Layout em carrossel
-- Página de detalhes da série
+- **Multi-search**: filmes e séries no mesmo dropdown
+- Debounce, cache e cancelamento de requisições
+- Navegação por teclado (`↑` `↓` `Enter` `Esc`) e atalho `/` para focar
+
+### ❤️ Conta e favoritos
+
+- Cadastro/login com JWT em cookie `httpOnly`
+- Favoritar filmes e séries direto do card ou da página de detalhe
+- **Toggle otimista** com rollback em caso de erro
+- Página de favoritos com remoção instantânea
 
 ### ⚙️ Gerais
 
-- Consumo de API real (TMDB)
-- Skeleton loading
-- Tratamento de erros
-- Layout responsivo
-- Transições suaves
-- SEO básico com metadata
+- Tema claro/escuro com preferência do sistema e **sem flash** no carregamento
+- Skeletons, error boundaries e páginas 404 dedicadas
+- SEO: metadata por página, OpenGraph, `sitemap.xml` e `robots.txt`
+- Acessibilidade: skip link, foco visível, `aria-*` nos componentes interativos
+- Layout responsivo e suporte a `prefers-reduced-motion`
 
 ---
 
-## 🧱 Stack utilizada
+## 🧱 Stack
 
-- **Next.js 14 (App Router)**
+- **Next.js 16 (App Router)** + **React 19**
 - **TypeScript**
-- **Tailwind CSS**
-- **Fetch API**
+- **Tailwind CSS 4**
+- **TanStack Query** (cache, scroll infinito, mutations otimistas)
+- **Prisma + PostgreSQL**
+- **JWT** + **bcrypt**
 - **TMDB API**
-- **Vercel (Deploy)**
+- **Vercel** (deploy)
+
+---
+
+## 🔐 Arquitetura de acesso ao TMDB
+
+O browser **nunca** fala com o TMDB diretamente. O token vive só no servidor:
+
+```
+Client Component
+   └─ services/catalog.client.ts   →  /api/catalog/*   →  lib/tmdb.ts  →  TMDB
+                                       (Route Handler)     (token aqui)
+```
+
+- `src/lib/tmdb.ts` é o único ponto que lê `TMDB_TOKEN` e monta os headers.
+- As rotas em `src/app/api/catalog/*` validam os parâmetros e aplicam `Cache-Control`.
+- Server Components chamam os serviços (`services/movies.ts`, `tv.ts`, `catalog.ts`) direto.
+
+> ⚠️ Não use `NEXT_PUBLIC_TMDB_TOKEN`: qualquer variável `NEXT_PUBLIC_*` referenciada em um módulo que chega ao cliente é **inlinada no bundle do browser**.
 
 ---
 
@@ -64,99 +91,51 @@
 ```
 src/
 ├── app/
-│   ├── page.tsx
-│   ├── layout.tsx
-│   ├── globals.css
-│   ├── api/
-│   │   ├── auth/
-│   │   │   ├── login/route.ts
-│   │   │   ├── logout/route.ts
-│   │   │   ├── me/route.ts
-│   │   │   └── signup/route.ts
-│   │   └── movies/
-│   │       ├── favorites/route.ts
-│   │       ├── favorites/[movieId]/route.ts
-│   │       └── search/route.ts
-│   ├── login/page.tsx
-│   ├── signup/page.tsx
-│   ├── profile/page.tsx
-│   └── movies/
-│       ├── error.tsx
-│       └── [id]/
-│           ├── page.tsx
-│           └── loading.tsx
+│   ├── page.tsx                  # home (hero + linhas)
+│   ├── layout.tsx                # metadata, tema sem flash, skip link
+│   ├── error.tsx / not-found.tsx
+│   ├── sitemap.ts / robots.ts
+│   ├── discover/                 # busca por gênero, ano e ordenação
+│   ├── movies/[id]/ , tvs/[id]/  # detalhes + loading + error
+│   ├── login/ , signup/ , profile/
+│   └── api/
+│       ├── auth/{login,logout,me,signup}/route.ts
+│       ├── favorites/route.ts , favorites/[itemId]/route.ts
+│       └── catalog/
+│           ├── list/route.ts     # categorias de filmes e séries
+│           ├── search/route.ts   # multi-search
+│           ├── discover/route.ts
+│           ├── genres/route.ts
+│           └── tv/[id]/seasons/[season]/route.ts
 │
 ├── components/
 │   ├── domain/
-│   │   ├── MovieCard.tsx
-│   │   ├── MovieRow.tsx
-│   │   ├── MovieSearch.tsx
-│   │   ├── TvShowCard.tsx
-│   │   ├── TvShowRow.tsx
-│   │   ├── FavoriteButton.tsx
-│   │   ├── LoginForm.tsx
-│   │   ├── SignupForm.tsx
-│   │   └── Pagination.tsx
-│   ├── layout/
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   └── Container.tsx
-│   └── ui/
-│       ├── HeartIcon.tsx
-│       └── Spinner.tsx
+│   │   ├── Hero.tsx  MediaDetail.tsx  DetailSkeleton.tsx
+│   │   ├── MediaCard.tsx  MediaRow.tsx  MediaCarousel.tsx  MediaScroller.tsx
+│   │   ├── MediaSearch.tsx  DiscoverFilters.tsx  DiscoverResults.tsx
+│   │   ├── CastRow.tsx  TrailerDialog.tsx  SeasonPicker.tsx  EpisodeList.tsx
+│   │   ├── FavoriteButton.tsx  FavoriteRow.tsx  ItemPoster.tsx  CardSkeleton.tsx
+│   │   └── LoginForm.tsx  SignupForm.tsx
+│   ├── layout/  (Header, Footer, Container)
+│   └── ui/      (HeartIcon, Spinner, RatingBadge, ErrorState)
 │
-├── services/
-│   ├── auth.ts
-│   ├── movies.ts
-│   ├── tv.ts
-│   └── favorites.ts
-│
-├── types/
-│   ├── Api.ts
-│   ├── Movie.ts
-│   ├── MovieCategory.ts
-│   ├── TmdbResponse.ts
-│   ├── TvShow.ts
-│   └── TvShowCategory.ts
-│
-├── context/
-│   ├── AuthContext.tsx
-│   └── ThemeContext.tsx
-│
-├── lib/
-│   ├── jwt.ts
-│   └── prisma.ts
-│
-├── utils/
-│   ├── getQueryClient.tsx
-│   ├── providers.tsx
-│   ├── response.ts
-│   └── safeJson.ts
-│
+├── hooks/useFavorites.ts         # fonte única dos favoritos no cliente
+├── lib/       (tmdb.ts, prisma.ts, jwt.ts, queryKeys.ts)
+├── services/  (movies, tv, catalog, catalog.client, auth, favorites, favorites.client)
+├── types/     (Media, Movie, TvShow, Credits, Video, Genre, Favorite, Api, TmdbResponse)
+├── context/   (AuthContext, ThemeContext)
+├── utils/     (format, params, redirect, response, safeJson, providers, getQueryClient)
 ├── constants/
-│   └── index.ts
-│
-└── proxy.ts
+└── proxy.ts                      # protege /profile
 ```
 
 ---
 
-## 🔌 API
-
-Este projeto utiliza a API pública do **TMDB**.
+## 🔌 API do TMDB
 
 📌 Documentação: [https://developer.themoviedb.org](https://developer.themoviedb.org)
 
-### Endpoints usados
-
-- `/movie/popular`
-- `/movie/top_rated`
-- `/movie/now_playing`
-- `/movie/upcoming`
-- `/tv/popular`
-- `/tv/top_rated`
-- `/tv/on_the_air`
-- `/tv/airing_today`
+Endpoints usados: `/trending/*`, `/movie/{categoria}`, `/tv/{categoria}`, `/movie/{id}`, `/tv/{id}` (com `append_to_response=credits,videos,recommendations`), `/tv/{id}/season/{n}`, `/discover/{movie,tv}`, `/genre/{tipo}/list`, `/search/multi`.
 
 ---
 
@@ -175,14 +154,24 @@ cd streamly
 npm install
 ```
 
-### 3. Renomeie o arquivo `.env.example` para `.env`
+### 3. Configure o ambiente
+
+Copie `.env.example` para `.env` e preencha:
 
 ```env
-NEXT_PUBLIC_TMDB_API_KEY=SUA_CHAVE_AQUI
-JWT_SECRET=SUA_CHAVE_AQUI
+APP_URL=http://localhost:5173
+TMDB_TOKEN=seu_token_de_leitura_v4
+JWT_SECRET=sua_chave
+DATABASE_URL=postgresql://user:password@localhost:5432/streamly
 ```
 
-### 4. Rode o projeto
+### 4. Prepare o banco
+
+```bash
+npx prisma migrate dev
+```
+
+### 5. Rode o projeto
 
 ```bash
 npm run dev
@@ -194,18 +183,19 @@ Acesse: `http://localhost:5173`
 
 ## 📌 Decisões técnicas
 
-- **Server Components** para busca de dados no servidor
-- **Client Components** apenas onde há interatividade
-- Services isolados para chamadas à API
-- Componentes reutilizáveis (`Row`, `Grid`, `Card`)
-- Uso de `flex-shrink` para carrosséis horizontais
-- Layout mobile-first
+- **Server Components** buscam dados; Client Components só onde há interatividade
+- Token do TMDB isolado em `lib/tmdb.ts`, com revalidação por tipo de recurso
+- Componentes de mídia unificados (`MediaCard`, `MediaRow`) em vez de duplicar filme/série
+- Estado de filtros na URL; estado de servidor no TanStack Query
+- Envelope `ApiResponse` consistente, com o status HTTP correto na resposta
+- Posters em `w342` nos cards (em vez de `original`) para reduzir o peso das listas
+- Sem `loading.tsx` nas páginas de detalhe: o arquivo cria um boundary que envia o
+  shell antes de o `notFound()` resolver, e títulos inexistentes viravam **soft-404**
+  (HTTP 200). O feedback de carregamento fica no próprio card, via `useTransition`.
 
 ---
 
 ## 🎯 Objetivo do projeto
-
-Este projeto foi criado para:
 
 - Demonstrar consumo de APIs reais
 - Praticar arquitetura de componentes
@@ -216,8 +206,11 @@ Este projeto foi criado para:
 
 ## 📈 Próximos passos (Roadmap)
 
-- [ ] Página de temporadas e episódios
-- [ ] Filtro por gênero
+- [x] Página de temporadas e episódios
+- [x] Filtro por gênero
+- [ ] Página de pessoa (ator/diretor) com filmografia
+- [ ] Watchlist separada de "favoritos"
+- [ ] Testes automatizados (Vitest + Testing Library)
 
 ---
 
@@ -227,3 +220,7 @@ Este projeto foi criado para:
 
 - GitHub: [https://github.com/emanuelmarques45](https://github.com/emanuelmarques45)
 - LinkedIn: [https://www.linkedin.com/in/emanuel-marques-541617215/](https://www.linkedin.com/in/emanuel-marques-541617215/)
+
+---
+
+Este produto usa a API do TMDB, mas não é endossado nem certificado por ele.

@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     if (exists) {
       return fail("User already exists", 409);
     }
-  } catch (err) {
+  } catch {
     return fail("Internal server error", 500);
   }
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   let hashedPassword: string;
   try {
     hashedPassword = await bcrypt.hash(pwd, 10);
-  } catch (err) {
+  } catch {
     return fail("Internal server error", 500);
   }
 
@@ -96,8 +96,11 @@ export async function POST(req: Request) {
     });
 
     return res;
-  } catch (err: any) {
-    if (err?.code === "P2002" || err?.meta?.target?.includes("email")) {
+  } catch (err) {
+    // P2002 = violação de constraint única (corrida entre duas inscrições).
+    const code = (err as { code?: string })?.code;
+
+    if (code === "P2002") {
       return fail("User already exists", 409);
     }
 

@@ -1,62 +1,65 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getFavorites } from "@/services/favorites";
-import { useAuth } from "@/context/AuthContext";
+import { usePathname, useRouter } from "next/navigation";
 import { HeartIcon } from "@/components/ui/HeartIcon";
+import { useFavorites } from "@/hooks/useFavorites";
 import { Favorite } from "@/types/Favorite";
-import { useQueryClient } from "@tanstack/react-query";
-import { toggleFavorite } from "@/services/favorites.client";
+import clsx from "clsx";
 
-export function FavoriteButton({ itemId, itemType }: Favorite) {
-  const { user } = useAuth();
-  const [favorited, setFavorited] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const queryClient = useQueryClient();
+type FavoriteButtonProps = Favorite & {
+  size?: "sm" | "md";
+  className?: string;
+};
 
-  useEffect(() => {
-    if (!user) return;
+export function FavoriteButton({
+  itemId,
+  itemType,
+  size = "md",
+  className,
+}: FavoriteButtonProps) {
+  const { isFavorite, isTogglingItem, toggle, isAuthenticated, isReady } =
+    useFavorites();
 
-    async function checkFavorite() {
-      const res = await getFavorites();
-      if (res.ok) {
-        const isFav = res.data.some(
-          (fav: any) => fav.itemId === itemId && fav.itemType === itemType
-        );
+  const router = useRouter();
+  const pathname = usePathname();
 
-        setFavorited(isFav);
-      }
-      setChecking(false);
+  const favorite: Favorite = { itemId, itemType };
+  const favorited = isFavorite(favorite);
+  const pending = isTogglingItem(favorite);
+
+  function handleClick(event: React.MouseEvent) {
+    // Em cards o botão fica sobre um <Link>: sem isso o clique navega.
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
     }
 
-    checkFavorite();
-  }, [user, itemId, itemType]);
-
-  if (!user || checking) return null;
-
-  async function handleToggle() {
-    setLoading(true);
-    const res = await toggleFavorite({ itemId, itemType });
-    setLoading(false);
-
-    if (res.ok) {
-      setFavorited(res.data.favorited);
-    }
-
-    queryClient.invalidateQueries({
-      queryKey: ["favorites"],
-    });
+    toggle(favorite);
   }
 
   return (
     <button
-      onClick={handleToggle}
-      disabled={loading}
-      aria-label='Toggle favorite'
-      className='group p-1'
+      type='button'
+      onClick={handleClick}
+      disabled={!isReady}
+      aria-pressed={favorited}
+      aria-label={
+        favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"
+      }
+      title={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+      className={clsx(
+        "group rounded-full p-1 transition disabled:opacity-40",
+        className
+      )}
     >
-      <HeartIcon filled={favorited} loading={loading} />
+      <HeartIcon
+        filled={favorited}
+        loading={pending}
+        className={size === "sm" ? "h-5 w-5" : "h-8 w-8"}
+      />
     </button>
   );
 }

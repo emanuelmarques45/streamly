@@ -1,56 +1,56 @@
-import { Episode, SeasonDetails, TvShow, TvShowCategory } from "@/types/TvShow";
-import { BASE_URL, HEADERS } from "@/constants";
+import { REVALIDATE } from "@/constants";
+import { tmdbFetch, tmdbFetchSafe } from "@/lib/tmdb";
 import { TmdbResponse } from "@/types/TmdbResponse";
+import {
+  SeasonDetails,
+  TvShow,
+  TvShowCategory,
+  TvShowDetails,
+} from "@/types/TvShow";
 
 export async function getTvShows(
   page = 1,
   category: TvShowCategory = "popular"
 ): Promise<TmdbResponse<TvShow>> {
-  const res = await fetch(`${BASE_URL}/tv/${category}?page=${page}`, {
-    cache: "force-cache",
-    headers: HEADERS,
+  return tmdbFetch<TmdbResponse<TvShow>>(`/tv/${category}`, {
+    params: { page },
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch Tv shows");
-  }
-
-  return await res.json();
 }
 
-export async function getTvShowById(id: number): Promise<TvShow> {
-  const res = await fetch(`${BASE_URL}/tv/${id}`, {
-    headers: HEADERS,
+export async function getTvShowById(id: number): Promise<TvShowDetails | null> {
+  return tmdbFetchSafe<TvShowDetails>(`/tv/${id}`, {
+    params: {
+      append_to_response: "credits,videos,recommendations",
+    },
+    revalidate: REVALIDATE.detail,
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch Tv show");
-  }
-
-  return res.json();
 }
 
 export async function getTvShowsByIds(ids: number[]): Promise<TvShow[]> {
-  const requests = ids.map((id) =>
-    fetch(`${BASE_URL}/tv/${id}`, {
-      headers: HEADERS,
-    }).then((res) => res.json())
+  const results = await Promise.all(
+    ids.map((id) =>
+      tmdbFetchSafe<TvShow>(`/tv/${id}`, { revalidate: REVALIDATE.detail })
+    )
   );
 
-  return Promise.all(requests);
+  return results.filter((show): show is TvShow => show !== null);
 }
 
 export async function getSeasonEpisodes(
   tvId: number,
   seasonNumber: number
-): Promise<SeasonDetails> {
-  const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${seasonNumber}`, {
-    headers: HEADERS,
+): Promise<SeasonDetails | null> {
+  return tmdbFetchSafe<SeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`, {
+    revalidate: REVALIDATE.detail,
   });
+}
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch season episodes");
-  }
-
-  return res.json();
+export async function searchTvShows(
+  query: string,
+  page = 1
+): Promise<TmdbResponse<TvShow>> {
+  return tmdbFetch<TmdbResponse<TvShow>>("/search/tv", {
+    params: { query, page, include_adult: false },
+    revalidate: REVALIDATE.search,
+  });
 }

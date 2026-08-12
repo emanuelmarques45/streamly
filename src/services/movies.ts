@@ -1,61 +1,43 @@
-import { BASE_URL, HEADERS } from "@/constants";
-import { Movie, MovieCategory } from "@/types/Movie";
+import { REVALIDATE } from "@/constants";
+import { tmdbFetch, tmdbFetchSafe } from "@/lib/tmdb";
+import { Movie, MovieCategory, MovieDetails } from "@/types/Movie";
 import { TmdbResponse } from "@/types/TmdbResponse";
 
 export async function getMovies(
   page = 1,
   category: MovieCategory = "popular"
 ): Promise<TmdbResponse<Movie>> {
-  const res = await fetch(`${BASE_URL}/movie/${category}?page=${page}`, {
-    cache: "force-cache",
-    headers: HEADERS,
+  return tmdbFetch<TmdbResponse<Movie>>(`/movie/${category}`, {
+    params: { page },
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch movies");
-  }
-
-  return await res.json();
 }
 
-export async function getMovieById(id: number): Promise<Movie> {
-  await new Promise((r) => setTimeout(r, 300));
-  const res = await fetch(`${BASE_URL}/movie/${id}`, {
-    cache: "force-cache",
-    headers: HEADERS,
+export async function getMovieById(id: number): Promise<MovieDetails | null> {
+  return tmdbFetchSafe<MovieDetails>(`/movie/${id}`, {
+    params: {
+      append_to_response: "credits,videos,recommendations",
+    },
+    revalidate: REVALIDATE.detail,
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch movie");
-  }
-
-  return res.json();
 }
 
 export async function getMoviesByIds(ids: number[]): Promise<Movie[]> {
-  const requests = ids.map((id) =>
-    fetch(`${BASE_URL}/movie/${id}`, {
-      headers: HEADERS,
-    }).then((res) => res.json())
+  const results = await Promise.all(
+    ids.map((id) =>
+      tmdbFetchSafe<Movie>(`/movie/${id}`, { revalidate: REVALIDATE.detail })
+    )
   );
 
-  return Promise.all(requests);
+  // Ids inválidos (ou removidos do TMDB) simplesmente somem da lista.
+  return results.filter((movie): movie is Movie => movie !== null);
 }
 
-export async function searchMovies(query: string): Promise<Movie[]> {
-  if (!query) return [];
-
-  const res = await fetch(
-    `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}`,
-    {
-      headers: HEADERS,
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to search movies");
-  }
-
-  const data: TmdbResponse<Movie> = await res.json();
-  return data.results;
+export async function searchMovies(
+  query: string,
+  page = 1
+): Promise<TmdbResponse<Movie>> {
+  return tmdbFetch<TmdbResponse<Movie>>("/search/movie", {
+    params: { query, page, include_adult: false },
+    revalidate: REVALIDATE.search,
+  });
 }

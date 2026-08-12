@@ -1,63 +1,61 @@
-import { prisma } from "@/lib/prisma";
-import { ok, fail } from "@/utils/response";
+import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
-import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { isFavoriteType } from "@/types/Favorite";
+import { parseId } from "@/utils/params";
+import { fail, ok } from "@/utils/response";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ itemId: string }> }
 ) {
-  const { itemId } = await params;
-
-  const body = await req.json();
-  const { itemType } = body; // "MOVIE" | "TV"
-
   const token = (await cookies()).get("auth")?.value;
   if (!token) return fail("Unauthorized", 401);
 
-  let user;
+  let userId: number;
   try {
-    user = verifyToken(token);
+    userId = verifyToken(token).id;
   } catch {
     return fail("Unauthorized", 401);
   }
 
-  const id = Number(itemId);
-  if (!id) return fail("Invalid item id");
+  const { itemId } = await params;
+  const id = parseId(itemId);
+  if (!id) return fail("Invalid item id", 400);
 
-  const validItemTypes = ["MOVIE", "TV"] as const;
-  if (!itemType || !validItemTypes.includes(itemType)) {
-    return fail("Invalid item type");
+  // Um corpo malformado derrubava a rota com erro 500 não tratado.
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return fail("Invalid request body", 400);
   }
 
-  const exists = await prisma.favorite.findUnique({
-    where: {
-      userId_itemId_itemType: {
-        userId: user.id,
-        itemId: id,
-        itemType,
-      },
-    },
-  });
+  const itemType = (body as { itemType?: unknown })?.itemType;
+  if (!isFavoriteType(itemType)) {
+    return fail("Invalid item type", 400);
+  }
 
-  // REMOVE
-  if (exists) {
-    await prisma.favorite.delete({
-      where: { id: exists.id },
+  try {
+    const existing = await prisma.favorite.findUnique({
+      where: {
+        userId_itemId_itemType: { userId, itemId: id, itemType },
+      },
+      select: { id: true },
     });
 
-    return ok({ favorited: false });
+    if (existing) {
+      await prisma.favorite.delete({ where: { id: existing.id } });
+      return ok({ favorited: false });
+    }
+
+    await prisma.favorite.create({
+      data: { userId, itemId: id, itemType },
+    });
+
+    return ok({ favorited: true });
+  } catch {
+    return fail("Failed to update favorite", 500);
   }
-
-  // ADD
-  await prisma.favorite.create({
-    data: {
-      userId: user.id,
-      itemId: id,
-      itemType,
-    },
-  });
-
-  return ok({ favorited: true });
 }

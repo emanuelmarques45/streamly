@@ -2,24 +2,41 @@
 
 import { ApiResponse } from "@/types/Api";
 import { Favorite } from "@/types/Favorite";
+import { safeJson } from "@/utils/safeJson";
+
+async function unwrap<T>(res: Response): Promise<T> {
+  const body = await safeJson<ApiResponse<T>>(res);
+
+  if (!body) throw new Error("Invalid server response");
+  if (!body.ok) throw new Error(body.error);
+
+  return body.data;
+}
+
+export async function fetchFavorites(
+  signal?: AbortSignal
+): Promise<Favorite[]> {
+  const res = await fetch("/api/favorites", {
+    credentials: "include",
+    signal,
+  });
+
+  // Visitante deslogado não é erro: apenas não tem favoritos.
+  if (res.status === 401) return [];
+
+  return unwrap<Favorite[]>(res);
+}
 
 export async function toggleFavorite({
   itemId,
   itemType,
-}: Favorite): Promise<ApiResponse<{ favorited: boolean }>> {
-  try {
-    const res = await fetch(`/api/favorites/${itemId}`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({ itemType }),
-    });
+}: Favorite): Promise<{ favorited: boolean }> {
+  const res = await fetch(`/api/favorites/${itemId}`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ itemType }),
+  });
 
-    return await res.json();
-  } catch {
-    return {
-      ok: false,
-      status: 0,
-      error: "Network error",
-    };
-  }
+  return unwrap<{ favorited: boolean }>(res);
 }

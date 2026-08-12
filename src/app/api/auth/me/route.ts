@@ -1,18 +1,17 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
+import { ok } from "@/utils/response";
 
 export async function GET() {
   const token = (await cookies()).get("auth")?.value;
 
-  if (!token) {
-    return NextResponse.json(null);
-  }
+  if (!token) return ok(null);
 
   try {
-    const user = verifyToken(token);
-    return NextResponse.json(user);
+    const { id, name } = verifyToken(token);
+    // Devolve o mesmo envelope `ApiResponse` das outras rotas.
+    return ok({ id, name: name ?? null });
   } catch {
-    return NextResponse.json(null);
+    return ok(null);
   }
 }

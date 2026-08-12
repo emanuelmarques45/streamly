@@ -1,12 +1,11 @@
 import { ApiResponse } from "@/types/Api";
-import { fail, ok } from "@/utils/response";
 import { safeJson } from "@/utils/safeJson";
-import { NextResponse } from "next/server";
 
 export type User = {
   id: number;
   name: string | null;
-  email: string | null;
+  /** Ausente na sessão (`/api/auth/me`): o JWT não guarda e-mail em texto. */
+  email?: string | null;
 };
 
 export async function login({
@@ -165,5 +164,3 @@ export async function getMe(options?: {
     };
   }
 }
-
-export default { login, signup, logout, getMe };

@@ -1,55 +1,68 @@
 import Image from "next/image";
 import { IMAGE_BASE_URL } from "@/constants";
-import { getSeasonEpisodes } from "@/services/tv";
+import { Episode } from "@/types/TvShow";
+import { formatDate, formatRuntime } from "@/utils/format";
+import { RatingBadge } from "../ui/RatingBadge";
 
-type Props = {
-  tvId: number;
-  season: number;
+type EpisodeListProps = {
+  episodes: Episode[];
 };
 
-export async function EpisodeList({ tvId, season }: Props) {
-  const data = await getSeasonEpisodes(tvId, season);
-
-  if (!data?.episodes?.length) {
-    return <p className='text-sm text-text/60'>No episodes found.</p>;
+/** Lista de episódios de uma temporada (apresentacional). */
+export function EpisodeList({ episodes }: EpisodeListProps) {
+  if (!episodes.length) {
+    return (
+      <p className='text-sm text-text-muted'>
+        Nenhum episódio cadastrado para esta temporada.
+      </p>
+    );
   }
 
   return (
-    <div className='space-y-4'>
-      {data.episodes.map((ep: any) => (
-        <div
-          key={ep.id}
-          className='
-            flex
-            gap-4
-            rounded-lg
-            border
-            border-border
-            p-4
-          '
-        >
-          <div className='relative h-24 w-40 overflow-hidden rounded-md bg-black/20'>
-            {ep.still_path && (
-              <Image
-                src={`${IMAGE_BASE_URL.w300}${ep.still_path}`}
-                alt={ep.name}
-                fill
-                className='object-cover'
-              />
-            )}
-          </div>
+    <ol className='space-y-4'>
+      {episodes.map((episode) => {
+        const airDate = formatDate(episode.air_date);
+        const runtime = formatRuntime(episode.runtime);
 
-          <div className='flex flex-col gap-1'>
-            <strong>
-              {ep.episode_number}. {ep.name}
-            </strong>
+        return (
+          <li
+            key={episode.id}
+            className='flex flex-col gap-4 rounded-lg border border-border p-4 sm:flex-row'
+          >
+            <div className='relative aspect-video w-full shrink-0 overflow-hidden rounded-md bg-black/20 sm:h-24 sm:w-40'>
+              {episode.still_path ? (
+                <Image
+                  src={`${IMAGE_BASE_URL.w300}${episode.still_path}`}
+                  alt=''
+                  fill
+                  sizes='(max-width: 640px) 100vw, 160px'
+                  className='object-cover'
+                />
+              ) : (
+                <div className='flex h-full items-center justify-center text-xs text-text-muted'>
+                  Sem imagem
+                </div>
+              )}
+            </div>
 
-            <span className='text-xs text-text/60'>{ep.air_date}</span>
+            <div className='flex min-w-0 flex-col gap-1'>
+              <strong className='text-sm'>
+                {episode.episode_number}. {episode.name}
+              </strong>
 
-            <p className='text-sm text-text/70 line-clamp-2'>{ep.overview}</p>
-          </div>
-        </div>
-      ))}
-    </div>
+              <div className='flex flex-wrap items-center gap-x-2 text-xs text-text-muted'>
+                {airDate && <span>{airDate}</span>}
+                {runtime && <span>· {runtime}</span>}
+                <RatingBadge value={episode.vote_average} className='text-xs' />
+              </div>
+
+              <p className='line-clamp-3 text-sm text-text/70'>
+                {episode.overview || "Sem descrição."}
+              </p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

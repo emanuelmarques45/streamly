@@ -1,12 +1,25 @@
-export function Spinner({ size = 24 }: { size?: number }) {
+import clsx from "clsx";
+
+type SpinnerProps = {
+  size?: number;
+  className?: string;
+  label?: string;
+};
+
+export function Spinner({
+  size = 24,
+  className,
+  label = "Carregando",
+}: SpinnerProps) {
   return (
     <svg
       width={size}
       height={size}
       viewBox='0 0 24 24'
-      className='animate-spin text-white'
-      aria-label='Loading'
       role='status'
+      aria-label={label}
+      // `text-white` sumia no tema claro — agora herda a cor do texto.
+      className={clsx("animate-spin text-current", className)}
     >
       <circle
         className='opacity-25'
