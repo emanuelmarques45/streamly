@@ -1,5 +1,5 @@
 import { REVALIDATE } from "@/constants";
-import { tmdbFetch, tmdbFetchSafe } from "@/lib/tmdb";
+import { tmdbFetch, tmdbFetchDetail, tmdbFetchSafe } from "@/lib/tmdb";
 import { Movie, MovieCategory, MovieDetails } from "@/types/Movie";
 import { TmdbResponse } from "@/types/TmdbResponse";
 
@@ -13,7 +13,7 @@ export async function getMovies(
 }
 
 export async function getMovieById(id: number): Promise<MovieDetails | null> {
-  return tmdbFetchSafe<MovieDetails>(`/movie/${id}`, {
+  return tmdbFetchDetail<MovieDetails>(`/movie/${id}`, {
     params: {
       append_to_response: "credits,videos,recommendations",
     },

@@ -15,6 +15,16 @@ const HEADERS = {
   Authorization: `Bearer ${TMDB_TOKEN}`,
 };
 
+/**
+ * TMDB answers in English unless told otherwise. Sending the locale on every
+ * request is what makes titles, overviews and genre names come back in
+ * Portuguese; `region` also makes "now playing" and "upcoming" reflect
+ * Brazilian release dates.
+ */
+const TMDB_LANGUAGE = "pt-BR";
+const TMDB_REGION = "BR";
+const TMDB_FALLBACK_LANGUAGE = "en-US";
+
 export class TmdbError extends Error {
   constructor(
     message: string,
@@ -41,6 +51,10 @@ export async function tmdbFetch<T>(
   }
 
   const url = new URL(`${BASE_URL}${path}`);
+
+  // Defaults first, so an explicit `params.language` can still override them.
+  url.searchParams.set("language", TMDB_LANGUAGE);
+  url.searchParams.set("region", TMDB_REGION);
 
   for (const [key, value] of Object.entries(params ?? {})) {
     if (value === undefined || value === null || value === "") continue;
@@ -73,4 +87,38 @@ export async function tmdbFetchSafe<T>(
   } catch {
     return null;
   }
+}
+
+type Translatable = { overview: string; tagline?: string | null };
+
+/**
+ * Fetches a detail resource in the default locale, falling back to the original
+ * synopsis when TMDB has no translation for it.
+ *
+ * TMDB does not fall back on its own: an untranslated title comes back with an
+ * empty `overview` rather than the English text. A blank synopsis is worse than
+ * an English one, so we ask again — only when the field is actually empty.
+ */
+export async function tmdbFetchDetail<T extends Translatable>(
+  path: string,
+  options?: TmdbFetchOptions
+): Promise<T | null> {
+  const localized = await tmdbFetchSafe<T>(path, options);
+
+  if (!localized || localized.overview) return localized;
+
+  const original = await tmdbFetchSafe<Translatable>(path, {
+    params: { language: TMDB_FALLBACK_LANGUAGE },
+    revalidate: options?.revalidate,
+  });
+
+  if (!original?.overview) return localized;
+
+  // The spread only overwrites fields already present on `Translatable`, so the
+  // result keeps T's shape; TypeScript cannot narrow that on a generic.
+  return {
+    ...localized,
+    overview: original.overview,
+    tagline: localized.tagline || original.tagline,
+  } as T;
 }
