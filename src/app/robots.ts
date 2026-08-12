@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl = process.env.APP_URL ?? "http://localhost:5173";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -10,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       // Áreas autenticadas e API não têm valor em busca.
       disallow: ["/api/", "/profile"],
     },
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

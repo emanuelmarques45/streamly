@@ -4,16 +4,15 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import Providers from "@/utils/providers";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.APP_URL ?? "http://localhost:5173";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Streamly — filmes e séries",
     template: "%s · Streamly",
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
     title: "Streamly — filmes e séries",
     description:
       "Explore filmes e séries, veja elenco, trailers e temporadas, e monte sua lista de favoritos.",
-    url: siteUrl,
+    url: SITE_URL,
   },
   twitter: { card: "summary_large_image" },
 };
